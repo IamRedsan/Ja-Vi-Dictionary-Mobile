@@ -1,37 +1,53 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Tabs } from 'expo-router';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import '../global.css';
+import React from 'react';
+import { SafeAreaView } from 'react-native';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+const RootLayout: React.FC = () => {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <SafeAreaView className='flex-1'>
+      <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
+        <Tabs.Screen
+          name='(lookup)'
+          options={{
+            title: 'Tra cứu',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome size={28} name='home' color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name='(translate)'
+          options={{
+            title: 'Dịch',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome size={28} name='cog' color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name='(anki)'
+          options={{
+            title: 'Học',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome size={28} name='cog' color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name='(setting)'
+          options={{
+            title: 'Cài đặt',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome size={28} name='cog' color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+    </SafeAreaView>
   );
-}
+};
+
+export default RootLayout;
