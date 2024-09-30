@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
-const profile = () => {
+const Dictionary = () => {
   return (
     <View>
-      <Text>profile</Text>
+      <Text>Dictionary</Text>
     </View>
   )
 }
-export default profile
+export default Dictionary

@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
-const translate = () => {
+const Kanji = () => {
   return (
     <View>
-      <Text>translate</Text>
+      <Text>Kanji</Text>
     </View>
   )
 }
-export default translate
+export default Kanji

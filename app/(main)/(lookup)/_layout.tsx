@@ -4,8 +4,8 @@ import React from 'react';
 const LookupLayout: React.FC = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name='alphabet' />
-      <Stack.Screen name='dictionary' />
+      <Stack.Screen name='alphabet/index' />
+      <Stack.Screen name='dictionary/[id]' />
       <Stack.Screen name='kanji' />
     </Stack>
   );

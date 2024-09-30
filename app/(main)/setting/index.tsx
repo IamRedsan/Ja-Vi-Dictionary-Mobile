@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
-const alphabet = () => {
+const Setting = () => {
   return (
     <View>
-      <Text>alphabet</Text>
+      <Text>Setting</Text>
     </View>
   )
 }
-export default alphabet
+export default Setting

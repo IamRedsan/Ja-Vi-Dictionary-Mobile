@@ -1,16 +1,13 @@
 import React from 'react';
 import { TextInput as TI, TextInputProps as TIProps } from 'react-native';
 
-type TextInputProps = {};
+interface TextInputProps extends TIProps {}
 
-const TextInput: React.FC<TextInputProps & TIProps> = ({
-  className,
-  ...rest
-}) => {
+const TextInput: React.FC<TextInputProps> = ({ className, ...rest }) => {
   return (
     <TI
-      className={`px-4 py-0.5 border-border focus:border-ring border rounded-[8] w-full bg-background text-secondary-foreground placeholder:text-muted-foreground${
-        className ? ' ' + className : ''
+      className={`border-2 border-[#CBD5E1] focus:border-primary rounded-lg bg-white placeholder:text-[#6C757D] px-4 py-1 caret-primary ${
+        className ? className : ''
       }`}
       {...rest}
     />
