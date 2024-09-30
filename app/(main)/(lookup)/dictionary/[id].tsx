@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
-const dictionary = () => {
+const Dictionary = () => {
   return (
     <View>
-      <Text>dictionary</Text>
+      <Text>Dictionary</Text>
     </View>
   )
 }
-export default dictionary
+export default Dictionary
