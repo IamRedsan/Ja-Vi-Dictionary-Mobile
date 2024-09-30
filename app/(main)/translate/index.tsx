@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
-const profile = () => {
+const Translate = () => {
   return (
     <View>
-      <Text>profile</Text>
+      <Text>Translate</Text>
     </View>
   )
 }
-export default profile
+export default Translate
