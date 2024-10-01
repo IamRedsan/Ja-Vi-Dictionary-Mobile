@@ -1,9 +1,10 @@
 import FormRow from '@/components/form/FormRow';
 import Button from '@/components/ui/Button';
 import { Link } from 'expo-router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
-const Login = () => {
+
+const Login: React.FC = () => {
   const [values, setValues] = useState({
     email: '',
     password: '',
@@ -27,7 +28,6 @@ const Login = () => {
             text={values.email}
             onChangeText={(value) => onChangeText('email', value)}
             errMsg='Vui lòng nhập email!'
-            className=''
           />
           <FormRow
             label='Mật khẩu'
@@ -36,7 +36,6 @@ const Login = () => {
             onChangeText={(value) => onChangeText('password', value)}
             errMsg='Vui lòng nhập mật khẩu'
             secureTextEntry
-            className=''
           />
           <View className='flex-row justify-between'>
             <View />
