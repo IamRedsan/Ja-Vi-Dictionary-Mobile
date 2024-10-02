@@ -1,7 +1,14 @@
 import React, { forwardRef } from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useColorScheme } from 'nativewind';
+import { cssInterop, useColorScheme } from 'nativewind';
+
+cssInterop(FontAwesome, {
+  className: {
+    target: 'style',
+    nativeStyleToProp: { height: true, width: true, size: true },
+  } as any,
+});
 
 type FontAwesomeName = keyof typeof FontAwesome.glyphMap;
 
@@ -26,8 +33,7 @@ const Button = forwardRef<TouchableOpacity, ButtonProps>(
         {startIcon && (
           <FontAwesome
             name={startIcon}
-            size={16}
-            color={colorScheme === 'light' ? '#ffffff' : '#000000'}
+            className='text-secondary-foreground text-[16px]'
           />
         )}
         {children && (
@@ -36,8 +42,7 @@ const Button = forwardRef<TouchableOpacity, ButtonProps>(
         {endIcon && (
           <FontAwesome
             name={endIcon}
-            size={16}
-            color={colorScheme === 'light' ? '#ffffff' : '#000000'}
+            className='text-secondary-foreground text-[16px]'
           />
         )}
       </TouchableOpacity>

@@ -10,6 +10,7 @@ type FormRowProps = {
   errMsg?: string;
   className?: string;
   secureTextEntry?: boolean;
+  editable?: boolean;
 };
 
 const FormRow: React.FC<FormRowProps> = ({
@@ -20,6 +21,7 @@ const FormRow: React.FC<FormRowProps> = ({
   errMsg,
   className,
   secureTextEntry,
+  editable,
 }) => {
   return (
     <View className={className}>
@@ -30,6 +32,7 @@ const FormRow: React.FC<FormRowProps> = ({
         onChangeText={onChangeText}
         className='my-2'
         secureTextEntry={secureTextEntry}
+        editable={editable}
       />
       <Text className='text-[#EE4B2B] capitalize'>{errMsg ? errMsg : ''}</Text>
     </View>
