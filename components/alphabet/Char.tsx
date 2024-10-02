@@ -73,6 +73,7 @@ const Char: React.FC<CharProps> = ({ content, romaji }) => {
                     <KanjiGuide
                       ref={(el) => (kanjiExample.current[index] = el)}
                       word={word}
+                      size={90}
                     />
                   </View>
                 ))}

@@ -11,9 +11,10 @@ import { View } from 'react-native';
 
 interface KanjiGuideProps {
   word: string;
+  size: number;
 }
 
-const KanjiGuide = forwardRef<any, KanjiGuideProps>(({ word }, ref) => {
+const KanjiGuide = forwardRef<any, KanjiGuideProps>(({ word, size }, ref) => {
   const localKanjiRef = useRef<any>(null);
   const { colorScheme } = useColorScheme();
 
@@ -33,11 +34,11 @@ const KanjiGuide = forwardRef<any, KanjiGuideProps>(({ word }, ref) => {
 
   return (
     <>
-      <View className="bg-primary-background mb-2 p-2 rounded-[6px]">
+      <View className="bg-primary-background mb-2 p-2 rounded-[6px] items-center">
         <Kanji
           ref={localKanjiRef}
           element={word}
-          size={90}
+          size={size}
           placeholder={true}
           duration={700}
           pathProps={{
@@ -49,8 +50,6 @@ const KanjiGuide = forwardRef<any, KanjiGuideProps>(({ word }, ref) => {
             stroke: colorScheme === 'light' ? '#525356' : '#FEFEFE',
           }}
         />
-        {/* <View className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-300 transform -translate-y-1/2 "></View>
-        <View className="absolute left-1/2 top-0 h-full w-0.5 bg-gray-300 transform -translate-x-1/2"></View> */}
       </View>
       <Button
         startIcon="refresh"
