@@ -37,7 +37,9 @@ const Button = forwardRef<TouchableOpacity, ButtonProps>(
           />
         )}
         {children && (
-          <Text className='text-primary-foreground px-2'>{children}</Text>
+          <Text className="text-primary-foreground px-2 text-text-button">
+            {children}
+          </Text>
         )}
         {endIcon && (
           <FontAwesome

@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import TextInput from '../ui/TextInput';
 import React from 'react';
 
-type FormRowProps = {
+interface FormRowProps {
   label: string;
   text: string;
   onChangeText: (value: string) => void;
@@ -25,16 +25,16 @@ const FormRow: React.FC<FormRowProps> = ({
 }) => {
   return (
     <View className={className}>
-      <Text className='text-[#969596] capitalize'>{label}</Text>
+      <Text className="text-[#969596] capitalize">{label}</Text>
       <TextInput
         placeholder={placeHolder}
         value={text}
         onChangeText={onChangeText}
-        className='my-2'
+        className="my-2"
         secureTextEntry={secureTextEntry}
         editable={editable}
       />
-      <Text className='text-[#EE4B2B] capitalize'>{errMsg ? errMsg : ''}</Text>
+      <Text className="text-[#EE4B2B] capitalize">{errMsg ? errMsg : ''}</Text>
     </View>
   );
 };
