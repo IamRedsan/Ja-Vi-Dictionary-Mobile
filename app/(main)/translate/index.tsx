@@ -19,21 +19,21 @@ interface KanjiContainerProps {
   };
 }
 
-const kanjiWord: KanjiContainerProps = {
-  _id: '1',
-  text: '多',
-  phonetic: ['ĐA'],
-  onyomi: ['スイ', 'シ'],
-  kunyomi: ['おおい', 'まさ.に', 'まさ.る'],
-  strokes: 6,
-  jlptLevel: 4,
-  meaning: 'Nhiều. Khen tốt. Hơn.',
-  composition: {
-    _id: '1',
-    rawText: '夕',
-    phonetic: ['TỊCH'],
-  },
-};
+// const kanjiWord: KanjiContainerProps = {
+//   _id: '1',
+//   text: '多',
+//   phonetic: ['ĐA'],
+//   onyomi: ['スイ', 'シ'],
+//   kunyomi: ['おおい', 'まさ.に', 'まさ.る'],
+//   strokes: 6,
+//   jlptLevel: 4,
+//   meaning: 'Nhiều. Khen tốt. Hơn.',
+//   composition: {
+//     _id: '1',
+//     rawText: '夕',
+//     phonetic: ['TỊCH'],
+//   },
+// };
 
 const Translate = () => {
   const { toggleColorScheme } = useColorScheme();
