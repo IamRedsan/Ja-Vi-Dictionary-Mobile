@@ -33,18 +33,14 @@ const Button = forwardRef<TouchableOpacity, ButtonProps>(
         {startIcon && (
           <FontAwesome
             name={startIcon}
-            className='text-secondary-foreground text-[16px]'
+            className='text-text-button text-[16px]'
           />
         )}
-        {children && (
-          <Text className="text-primary-foreground px-2 text-text-button">
-            {children}
-          </Text>
-        )}
+        {children && <Text className='px-2 text-text-button'>{children}</Text>}
         {endIcon && (
           <FontAwesome
             name={endIcon}
-            className='text-secondary-foreground text-[16px]'
+            className='text-text-button text-[16px]'
           />
         )}
       </TouchableOpacity>

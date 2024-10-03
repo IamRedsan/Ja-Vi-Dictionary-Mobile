@@ -20,8 +20,8 @@ const ResetPassword: React.FC = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className='bg-[#2A2A2A] flex-1 items-center justify-center rounded-tr-[]'>
-        <Text className='text-white text-[24px] mb-10'>Quên mật khẩu</Text>
+      <View className='bg-tertiary-background flex-1 items-center justify-center rounded-tr-[]'>
+        <Text className='text-text text-[24px] mb-10'>Quên mật khẩu</Text>
         <View className='w-[80%] gap-4'>
           <FormRow
             label='Mật khẩu mới'
