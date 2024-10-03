@@ -7,9 +7,9 @@ import Header from './Header';
 const Table: React.FC = () => {
   const [isHiragana, setIsHiragana] = useState<boolean>(true);
   return (
-    <View className='flex-1 mx-[10px] mt-[8px] rounded-t-[10px] border-[rbga(0,0,0,1)] border-[0.2px]'>
+    <View className='flex-1 mx-[10px] rounded-t-[10px] border-[rgba(0,0,0,1)] border-[0.5px] overflow-hidden'>
       <Header setIsHiragana={setIsHiragana} />
-      <View className='bg-secondary-background gap-2 p-2'>
+      <View className='flex-1 bg-secondary-background gap-2 p-2'>
         {Alphabet.map((line, index1) => {
           return (
             <View key={index1} className='flex-row justify-between gap-2'>
@@ -18,8 +18,6 @@ const Table: React.FC = () => {
                   <Char
                     content={isHiragana ? word.hiragana : word.katakana}
                     romaji={word.romaji}
-                    link={word.mainLink}
-                    subLink={word.subLink}
                     key={index2}
                   />
                 );
