@@ -1,8 +1,6 @@
-import { Colors } from '@/constants/Colors';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
-  StyleSheet,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -15,8 +13,6 @@ import { useColorScheme } from 'nativewind';
 type CharProps = {
   content?: string;
   romaji?: string;
-  link?: string;
-  subLink?: string;
 };
 
 const Char: React.FC<CharProps> = ({ content, romaji }) => {
@@ -34,7 +30,7 @@ const Char: React.FC<CharProps> = ({ content, romaji }) => {
   return (
     <View className="flex-1">
       <TouchableOpacity
-        className="rounded-t-[6px] border-[rbga(0,0,0,1)] border-[0.2px] min-h-[80px] justify-center"
+        className="rounded-[6px] border-[rgba(0,0,0,1)] border-[0.2px] min-h-[80px] justify-center pb-1"
         onPress={() => {
           setModalContent(content.split(''));
           setShowModal(true);
