@@ -8,7 +8,7 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ setIsHiragana }) => {
   return (
-    <View className="w-full items-center justify-center bg-primary p-[8px] rounded-t-[10px] ">
+    <View className="w-full items-center justify-center bg-primary p-[8px] rounded-t-[10px] border-[rgba(0,0,0,1)] border-[0.2px] ">
       <Text className="text-text-button text-[28px]">Bảng chữ cái</Text>
       <View className="flex-row mt-[10px] justify-between w-[50%]">
         <TouchableOpacity
