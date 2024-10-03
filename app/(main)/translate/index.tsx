@@ -65,7 +65,7 @@ const Translate = () => {
 
   return (
     <ScrollView className="bg-primary-background">
-      <Link href="/login" asChild>
+      <Link href="/alphabet" asChild>
         <Button>Login</Button>
       </Link>
       <View className="pb-5">
@@ -78,7 +78,7 @@ const Translate = () => {
         </Button>
       </View>
       {/* <KanjiContainer {...kanjiWord} /> */}
-      <TypingGuide />
+      {/* <TypingGuide /> */}
     </ScrollView>
   );
 };
