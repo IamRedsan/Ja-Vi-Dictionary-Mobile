@@ -11,7 +11,7 @@ interface FormRowProps {
   className?: string;
   secureTextEntry?: boolean;
   editable?: boolean;
-};
+}
 
 const FormRow: React.FC<FormRowProps> = ({
   label,
@@ -25,16 +25,16 @@ const FormRow: React.FC<FormRowProps> = ({
 }) => {
   return (
     <View className={className}>
-      <Text className="text-[#969596] capitalize">{label}</Text>
+      <Text className='text-form-label capitalize'>{label}</Text>
       <TextInput
         placeholder={placeHolder}
         value={text}
         onChangeText={onChangeText}
-        className="my-2"
+        className='my-2'
         secureTextEntry={secureTextEntry}
         editable={editable}
       />
-      <Text className="text-[#EE4B2B] capitalize">{errMsg ? errMsg : ''}</Text>
+      <Text className='text-[#EE4B2B] capitalize'>{errMsg ? errMsg : ''}</Text>
     </View>
   );
 };

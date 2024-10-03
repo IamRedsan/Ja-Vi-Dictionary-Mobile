@@ -34,7 +34,7 @@ const KanjiGuide = forwardRef<any, KanjiGuideProps>(({ word, size }, ref) => {
 
   return (
     <>
-      <View className="bg-primary-background mb-2 p-2 rounded-[6px] items-center">
+      <View className='bg-primary-background mb-2 p-2 rounded-[6px] items-center'>
         <Kanji
           ref={localKanjiRef}
           element={word}
@@ -52,7 +52,7 @@ const KanjiGuide = forwardRef<any, KanjiGuideProps>(({ word, size }, ref) => {
         />
       </View>
       <Button
-        startIcon="refresh"
+        startIcon='refresh'
         onPress={() => {
           if (localKanjiRef.current) {
             localKanjiRef.current.animate();

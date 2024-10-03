@@ -6,7 +6,6 @@ import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const ForgotPassword: React.FC = () => {
-
   const router = useRouter();
 
   const [values, setValues] = useState({
@@ -23,8 +22,8 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className='bg-[#2A2A2A] flex-1 items-center justify-center rounded-tr-[]'>
-        <Text className='text-white text-[24px] mb-10'>Quên mật khẩu</Text>
+      <View className='bg-tertiary-background flex-1 items-center justify-center'>
+        <Text className='text-text text-[24px] mb-10'>Quên mật khẩu</Text>
         <View className='w-[80%] gap-4'>
           <FormRow
             label='Email'
@@ -45,7 +44,12 @@ const ForgotPassword: React.FC = () => {
             />
             <Button className='h-[38px] mt-[26px] w-[20%]'>Gửi</Button>
           </View>
-          <Button className='mt-[20px]' onPress={() => router.navigate('/forgot-password/reset-password')}>Xác nhận</Button>
+          <Button
+            className='mt-[20px]'
+            onPress={() => router.navigate('/forgot-password/reset-password')}
+          >
+            Xác nhận
+          </Button>
         </View>
         <Link href='/login' className='text-primary mt-16'>
           <View className='flex-row items-center'>

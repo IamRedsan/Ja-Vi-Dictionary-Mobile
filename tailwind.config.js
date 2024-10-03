@@ -7,18 +7,24 @@ module.exports = {
       colors: {
         primary: {
           DEFAULT: 'var(--primary)',
-          background: 'var(--primary-background)'
+          background: 'var(--primary-background)',
         },
         secondary: {
           DEFAULT: 'var(--secondary)',
           background: 'var(--secondary-background)',
         },
-        text:{
+        tertiary: {
+          background: 'var(--tertiary-background)',
+        },
+        text: {
           DEFAULT: 'var(--text)',
           light: 'var(--text-light)',
           button: 'var(--text-button)',
         },
-        icon: 'var(--icon)'
+        form: {
+          label: 'var(--form-label)',
+        },
+        icon: 'var(--icon)',
       },
     },
   },

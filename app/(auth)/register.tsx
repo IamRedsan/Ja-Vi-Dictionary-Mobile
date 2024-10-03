@@ -21,8 +21,8 @@ const Register: React.FC = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className='bg-[#2A2A2A] flex-1 items-center justify-center rounded-tr-[]'>
-        <Text className='text-white text-[24px] mb-10'>Đăng ký tài khoản</Text>
+      <View className='bg-tertiary-background flex-1 items-center justify-center'>
+        <Text className='text-text text-[24px] mb-10'>Đăng ký tài khoản</Text>
         <View className='w-[80%] gap-4'>
           <FormRow
             label='Email'
@@ -56,7 +56,7 @@ const Register: React.FC = () => {
           />
           <Button className='mt-[20px]'>Đăng ký</Button>
         </View>
-        <Text className='text-white mt-16'>
+        <Text className='text-text mt-16'>
           Đã có tài khoản?{' '}
           <Link href='/login' className='text-primary'>
             Đăng nhập ngay

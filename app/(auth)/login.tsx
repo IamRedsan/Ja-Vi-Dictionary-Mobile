@@ -19,8 +19,8 @@ const Login: React.FC = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className='bg-[#2A2A2A] flex-1 items-center justify-center rounded-tr-[]'>
-        <Text className='text-white text-[24px] mb-10'>Chào mừng trở lại!</Text>
+      <View className='bg-tertiary-background flex-1 items-center justify-center'>
+        <Text className='text-text text-[24px] mb-10'>Chào mừng trở lại!</Text>
         <View className='w-[80%] gap-4'>
           <FormRow
             label='Email'
@@ -45,7 +45,7 @@ const Login: React.FC = () => {
           </View>
           <Button>Đăng nhập</Button>
         </View>
-        <Text className='text-white mt-16'>
+        <Text className='text-text mt-16'>
           Chưa có tài khoản?{' '}
           <Link href='/register' className='text-primary'>
             Đăng ký ngay
