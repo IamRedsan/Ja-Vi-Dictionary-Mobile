@@ -19,7 +19,7 @@ const Loading: React.FC<LoadingProps> = ({ borderRadius, height, width }) => {
   const color: [string, string, string] =
     colorScheme === 'light'
       ? ['#e1e1e1', '#f2f2f2', '#e1e1e1']
-      : ['#32304a', '#403d58', '#4e4b67'];
+      : ['#32304a', '#403d58', '#32304a'];
   return (
     <SkeletonContainer
       isLoading={true}

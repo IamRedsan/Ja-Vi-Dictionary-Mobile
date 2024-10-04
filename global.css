@@ -5,12 +5,14 @@
 :root {
   --primary: #24b6b7;
   --secondary: #2ed1d1;
+  --quaternary: #92DBDB;
   --text: #000000;
   --text-light: #525356;
   --text-button: #ffffff;
   --primary-background: #f5f5f5;
   --secondary-background: #ffffff;
   --tertiary-background: #fafafa;
+  --loading-background: #e1e1e1;
   --form-label: #333333;
   --icon: #343a40;
 }
@@ -19,12 +21,14 @@
   :root {
     --primary: #ffbade;
     --secondary: #e5a0c4;
+    --quaternary: #805D6F;
     --text: #ffffff;
     --text-light: #fefefe;
     --text-button: #000000;
     --primary-background: #2b2a3b;
     --secondary-background: #2d2b44;
     --tertiary-background: #2a2a2a;
+    --loading-background: #32304a;
     --form-label: #969596;
     --icon: #ffbade;
   }
