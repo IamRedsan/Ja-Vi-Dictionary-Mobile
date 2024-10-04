@@ -1,9 +1,15 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+import KanjiContainer from '@/components/kanji/KanjiContainer';
+
 const Kanji = () => {
+  const { id } = useLocalSearchParams<{ id: string }>();
+
   return (
     <View>
-      <Text>Kanji</Text>
+      <KanjiContainer _id={id} />
     </View>
-  )
-}
-export default Kanji
+  );
+};
+export default Kanji;

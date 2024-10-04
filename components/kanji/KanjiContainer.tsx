@@ -1,9 +1,17 @@
-import React, { useRef } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import KanjiGuide from './KanjiGuide';
+import { useColorScheme } from 'nativewind';
+import KanjiLoading from '../loading/KanjiLoading';
 
 interface KanjiContainerProps {
   _id: string;
+}
+
+interface Kanji {
+  _id: {
+    $oid: string;
+  };
   text: string;
   phonetic: string[];
   onyomi: string[];
@@ -18,24 +26,66 @@ interface KanjiContainerProps {
   }[];
 }
 
-const KanjiContainer: React.FC<KanjiContainerProps> = ({
-  _id,
-  composition,
-  jlptLevel,
-  kunyomi,
-  meaning,
-  onyomi,
-  phonetic,
-  strokes,
-  text,
-}) => {
+const data = {
+  _id: {
+    $oid: '1',
+  },
+  text: '多',
+  phonetic: ['ĐA', 'HƠI'],
+  onyomi: ['スイ', 'シ'],
+  kunyomi: ['おおい', 'まさ.に', 'まさ.る'],
+  strokes: 6,
+  jlptLevel: 4,
+  meaning:
+    'Đồ để ăn. Ăn. Lộc. Mòn, khuyết, cùng nghĩa với chữ thực [蝕]. Thực ngôn [食言] ăn lời, đã nói ra mà lại lật lại gọi là thực ngôn. Thực chỉ [食指] ngón tay trỏ, có khi dùng để đếm số người ăn. Một âm là tự, cùng nghĩa với chữ tự [飼] cho ăn.',
+  composition: [
+    {
+      _id: '1',
+      rawText: '夕',
+      phonetic: 'TỊCH',
+    },
+    {
+      _id: '3',
+      rawText: '夕',
+      phonetic: 'TỊCH',
+    },
+  ],
+};
+
+const fetchData = {
+  data: { message: 'OK', is_success: true, data: data },
+};
+
+const KanjiContainer: React.FC<KanjiContainerProps> = ({ _id }) => {
   const kanjiRef = useRef<any>(null);
+  const [kanji, setKanji] = useState<Kanji | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { colorScheme } = useColorScheme();
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    setTimeout(async () => {
+      const response = fetchData; // Gọi API
+      setKanji(response.data.data);
+      setIsLoading(false);
+    }, 2000);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <ScrollView className="bg-secondary-background h-full">
+        <KanjiLoading />
+      </ScrollView>
+    );
+  }
+
   return (
-    <ScrollView>
-      <View className="justify-center items-center w-full">
+    <ScrollView className="bg-secondary-background h-full">
+      <View className="justify-center items-center w-full mt-3">
         <KanjiGuide
           size={120}
-          word={text}
+          word={kanji!.text}
           ref={(el) => (kanjiRef.current = el)}
         />
       </View>
@@ -47,7 +97,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
             </Text>
           </View>
           <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {phonetic.join(', ')}
+            {kanji?.phonetic.join(', ')}
           </Text>
         </View>
         <View className="m-1 flex-row ">
@@ -57,7 +107,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
             </Text>
           </View>
           <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {composition
+            {kanji?.composition
               .map((item) => `${item.rawText} ${item.phonetic}`)
               .join(', ')}
           </Text>
@@ -69,7 +119,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
             </Text>
           </View>
           <Text className="justify-center ml-2 flex-row text-lg text-text py-1">
-            {strokes}
+            {kanji?.strokes}
           </Text>
         </View>
         <View className="m-1 flex-row ">
@@ -79,7 +129,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
             </Text>
           </View>
           <Text className="justify-center ml-2 flex-row text-lg text-text py-1">
-            {'N' + jlptLevel}
+            {'N' + kanji?.jlptLevel}
           </Text>
         </View>
         <View className="m-1 flex-row ">
@@ -89,7 +139,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
             </Text>
           </View>
           <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {kunyomi.join(', ')}
+            {kanji?.kunyomi.join(', ')}
           </Text>
         </View>
         <View className="m-1 flex-row ">
@@ -99,7 +149,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
             </Text>
           </View>
           <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {onyomi.join(', ')}
+            {kanji?.onyomi.join(', ')}
           </Text>
         </View>
         <View className="m-1 flex-row">
@@ -109,7 +159,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
             </Text>
           </View>
           <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {meaning}
+            {kanji?.meaning}
           </Text>
         </View>
       </View>
