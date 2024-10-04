@@ -7,41 +7,41 @@ const MainLayout: React.FC = () => {
   return (
     <Tabs
       screenOptions={{ tabBarActiveTintColor: 'blue' }}
-      initialRouteName='(lookup)'
+      initialRouteName="(lookup)"
     >
       <Tabs.Screen
-        name='(lookup)'
+        name="(lookup)"
         options={{
           title: 'Tra cứu',
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name='cog' color={color} />
+            <FontAwesome size={28} name="cog" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name='translate'
+        name="translate"
         options={{
           title: 'Dịch',
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name='cog' color={color} />
+            <FontAwesome size={28} name="cog" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name='(anki)'
+        name="(anki)"
         options={{
           title: 'Học',
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name='cog' color={color} />
+            <FontAwesome size={28} name="cog" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name='setting'
+        name="setting"
         options={{
           title: 'Cài đặt',
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name='cog' color={color} />
+            <FontAwesome size={28} name="cog" color={color} />
           ),
         }}
       />
