@@ -19,5 +19,8 @@ web-build/
 expo-env.d.ts
 # @end expo-cli
 
-constants/jlpt_level_4.ts
-constants/jlpt_level_5.ts
+
+constants/jlptN3.json
+constants/jlptN4.json
+constants/jlptN5.tsx
+constants/JVDictionary.kanji.json
