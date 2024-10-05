@@ -16,6 +16,12 @@ module.exports = {
         tertiary: {
           background: 'var(--tertiary-background)',
         },
+        loading: {
+          DEFAULT: 'var(--loading-background)'
+        },
+        quaternary:{
+          DEFAULT: 'var(--quaternary)'
+        },
         text: {
           DEFAULT: 'var(--text)',
           light: 'var(--text-light)',
