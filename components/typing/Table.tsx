@@ -35,21 +35,6 @@ const Table: React.FC<TableProps> = ({ titlte, chars }) => {
             </View>
           );
         })}
-        {/* {Alphabet.map((line, index1) => {
-    return (
-      <View key={index1} className="flex-row justify-between gap-2">
-      {line.map((word, index2) => {
-        return (
-          <Char
-          content={iscontent ? word.content : word.katakana}
-          romaji={word.romaji}
-          key={index2}
-          />
-          );
-          })}
-          </View>
-          );
-          })} */}
       </View>
     </View>
   );

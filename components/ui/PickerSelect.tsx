@@ -23,7 +23,7 @@ const PickerSelect: React.FC<PickerSelectProps> = ({
   const { colorScheme } = useColorScheme();
   const style = colorScheme === 'light' ? styleLight : styleDark;
   const pickerRef = useRef<RNPickerSelect>(null);
-  const [tempValue, setTempValue] = useState<string>(value); // Initialize tempValue with the current value
+  const [tempValue, setTempValue] = useState<string>(value);
 
   return (
     <TouchableOpacity
