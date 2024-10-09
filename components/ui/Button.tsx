@@ -20,8 +20,6 @@ interface ButtonProps extends TouchableOpacityProps {
 
 const Button = forwardRef<TouchableOpacity, ButtonProps>(
   ({ className, startIcon, endIcon, children, ...rest }, ref) => {
-    const { colorScheme } = useColorScheme();
-
     return (
       <TouchableOpacity
         className={`flex-row items-center justify-center bg-primary rounded-lg p-2 ${

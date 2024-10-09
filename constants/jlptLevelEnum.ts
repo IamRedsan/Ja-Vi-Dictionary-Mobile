@@ -8,5 +8,3 @@ export const jlptLevelEnum: {
   { label: 'N2', value: '2' },
   { label: 'N1', value: '1' },
 ];
-
-export const jlptPlaceHolder: string = 'JLPT';
