@@ -6,14 +6,10 @@ import {
   typingSingle2,
   typingCombined,
 } from '@/constants/Typing';
-const Header = () => {
-  return <div>Typing</div>;
-};
 
 const TypingGuide: React.FC = () => {
   return (
     <View>
-      {/* Hoc cung Gaku */}
       <View className="flex-1 flex-wrap flex-row items-center justify-center py-2">
         <Text className="text-text text-2xl">Học gõ cùng </Text>
         <Text className="text-primary text-3xl font-bold">Gaku </Text>

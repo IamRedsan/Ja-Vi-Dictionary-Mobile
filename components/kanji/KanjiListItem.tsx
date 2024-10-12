@@ -2,9 +2,7 @@ import { Link } from 'expo-router';
 import { View, Text, Pressable, TouchableOpacity } from 'react-native';
 
 interface KanjiListItemProps {
-  _id: {
-    $oid: string;
-  };
+  _id: string;
   text: string;
   phonetic: string;
   isShowText: boolean;
@@ -19,7 +17,7 @@ const KanjiListItem: React.FC<KanjiListItemProps> = ({
   isShowText,
 }) => {
   return (
-    <Link href={('/kanji/' + _id.$oid) as any} asChild>
+    <Link href={('/kanji/' + _id) as any} asChild>
       <TouchableOpacity className="flex-col bg-secondary-background min-h-16 px-2 py-4">
         <Text
           className={`text-primary text-4xl font-medium text-center ${

@@ -1,6 +1,9 @@
-import { Link, Redirect } from 'expo-router';
-import { View, Text } from 'react-native';
+import { Redirect } from 'expo-router';
 const HomePage: React.FC = () => {
-  return <Redirect href="/navigate" />;
+  return (
+    <>
+      <Redirect href="/navigate" />
+    </>
+  );
 };
 export default HomePage;

@@ -1,76 +1,104 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import KanjiGuide from './KanjiGuide';
-import { useColorScheme } from 'nativewind';
+import { ScrollView, Text, View } from 'react-native';
+import KanjiGu_ide from './KanjiGuide';
 import KanjiLoading from '../loading/KanjiLoading';
+import axios from 'axios';
 
 interface KanjiContainerProps {
   _id: string;
 }
 
 interface Kanji {
-  _id: {
-    $oid: string;
-  };
+  _id: string;
   text: string;
   phonetic: string[];
   onyomi: string[];
   kunyomi: string[];
   strokes: number;
-  jlptLevel: number;
+  jlpt_level: number;
   meaning: string;
   composition: {
     _id: string;
-    rawText: string;
+    raw_text: string;
     phonetic: string;
   }[];
 }
 
-const data = {
-  _id: {
-    $oid: '1',
-  },
-  text: '多',
-  phonetic: ['ĐA', 'HƠI'],
-  onyomi: ['スイ', 'シ'],
-  kunyomi: ['おおい', 'まさ.に', 'まさ.る'],
-  strokes: 6,
-  jlptLevel: 4,
-  meaning:
-    'Đồ để ăn. Ăn. Lộc. Mòn, khuyết, cùng nghĩa với chữ thực [蝕]. Thực ngôn [食言] ăn lời, đã nói ra mà lại lật lại gọi là thực ngôn. Thực chỉ [食指] ngón tay trỏ, có khi dùng để đếm số người ăn. Một âm là tự, cùng nghĩa với chữ tự [飼] cho ăn.',
-  composition: [
-    {
-      _id: '1',
-      rawText: '夕',
-      phonetic: 'TỊCH',
-    },
-    {
-      _id: '3',
-      rawText: '夕',
-      phonetic: 'TỊCH',
-    },
-  ],
-};
+interface KanjiAttribute {
+  label: string;
+  value: string | number;
+}
 
-const fetchData = {
-  data: { message: 'OK', is_success: true, data: data },
-};
+interface RelatedWords {
+  _id: string;
+  text: string;
+  phonetic: string;
+}
 
 const KanjiContainer: React.FC<KanjiContainerProps> = ({ _id }) => {
   const kanjiRef = useRef<any>(null);
-  const [kanji, setKanji] = useState<Kanji | null>(null);
+  const [kanji, setKanji] = useState<Kanji>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { colorScheme } = useColorScheme();
+  const [relatedWord, setRelatedWords] = useState<RelatedWords[]>([]);
+  const [kanjiAttribute, setKanjiAttribute] = useState<KanjiAttribute[]>([]);
+
+  const getKanji = async (_id: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/kanjis/${_id}`
+      );
+      setKanji(response.data.data);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getRelatedWord = async (text: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/kanjis/${_id}`,
+        { params: { text: text } }
+      );
+      setRelatedWords(response.data.data);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getData = async (_id: string) => {
+    try {
+      await getKanji(_id);
+      // await getRelatedWord(kanji!.text);
+    } catch (error) {
+      //Toast error
+    }
+  };
 
   useEffect(() => {
     setIsLoading(true);
+    getData(_id).then(() => setIsLoading(false));
+  }, [_id]);
 
-    setTimeout(async () => {
-      const response = fetchData; // Gọi API
-      setKanji(response.data.data);
-      setIsLoading(false);
-    }, 2000);
-  }, []);
+  useEffect(() => {
+    if (kanji) {
+      const kanjiAttributes = [
+        { label: 'Hán Việt', value: kanji.phonetic?.join(', ') || 'N/A' },
+        {
+          label: 'Bộ thủ',
+          value:
+            kanji.composition
+              ?.map((item) => `${item.raw_text} ${item.phonetic}`)
+              .join(', ') || 'N/A',
+        },
+        { label: 'Số nét', value: kanji.strokes || 'N/A' },
+        { label: 'JLPT', value: 'N' + (kanji.jlpt_level || 'N/A') },
+        { label: 'Kunyomi', value: kanji.kunyomi?.join(', ') || 'N/A' },
+        { label: 'Onyomi', value: kanji.onyomi?.join(', ') || 'N/A' },
+        { label: 'Nghĩa', value: kanji.meaning || 'N/A' },
+      ];
+      setKanjiAttribute(kanjiAttributes);
+    }
+  }, [kanji]);
 
   if (isLoading) {
     return (
@@ -83,85 +111,25 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({ _id }) => {
   return (
     <ScrollView className="bg-secondary-background h-full">
       <View className="justify-center items-center w-full mt-3">
-        <KanjiGuide
+        <KanjiGu_ide
           size={120}
-          word={kanji!.text}
-          ref={(el) => (kanjiRef.current = el)}
+          word={kanji?.text || ''}
+          ref={(el: any) => (kanjiRef.current = el)}
         />
       </View>
       <View className="w-full flex-col m-2">
-        <View className="m-1 flex-row ">
-          <View className="bg-primary-background rounded-md h-9">
-            <Text className="text-text-light ml-1 p-1 min-w-24 text-lg ">
-              Hán Việt
+        {kanjiAttribute.map((attribute, index) => (
+          <View key={index} className="m-1 flex-row">
+            <View className="bg-primary-background rounded-md h-9">
+              <Text className="text-text-light ml-1 p-1 min-w-24 text-lg">
+                {attribute.label}
+              </Text>
+            </View>
+            <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
+              {attribute.value}
             </Text>
           </View>
-          <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {kanji?.phonetic.join(', ')}
-          </Text>
-        </View>
-        <View className="m-1 flex-row ">
-          <View className="bg-primary-background rounded-md h-9">
-            <Text className="text-text-light ml-1 p-1 min-w-24 text-lg ">
-              Bộ thủ
-            </Text>
-          </View>
-          <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {kanji?.composition
-              .map((item) => `${item.rawText} ${item.phonetic}`)
-              .join(', ')}
-          </Text>
-        </View>
-        <View className="m-1 flex-row ">
-          <View className="bg-primary-background rounded-md h-9">
-            <Text className="text-text-light  ml-1 p-1 min-w-24 text-lg ">
-              Số nét
-            </Text>
-          </View>
-          <Text className="justify-center ml-2 flex-row text-lg text-text py-1">
-            {kanji?.strokes}
-          </Text>
-        </View>
-        <View className="m-1 flex-row ">
-          <View className="bg-primary-background rounded-md h-9">
-            <Text className="text-text-light  ml-1 p-1 min-w-24 text-lg ">
-              JLPT
-            </Text>
-          </View>
-          <Text className="justify-center ml-2 flex-row text-lg text-text py-1">
-            {'N' + kanji?.jlptLevel}
-          </Text>
-        </View>
-        <View className="m-1 flex-row ">
-          <View className="bg-primary-background rounded-md h-9">
-            <Text className="text-text-light ml-1 p-1 min-w-24 text-lg ">
-              Kunyomi
-            </Text>
-          </View>
-          <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {kanji?.kunyomi.join(', ')}
-          </Text>
-        </View>
-        <View className="m-1 flex-row ">
-          <View className="bg-primary-background rounded-md h-9">
-            <Text className="text-text-light ml-1 p-1 min-w-24 text-lg ">
-              Onyomi
-            </Text>
-          </View>
-          <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {kanji?.onyomi.join(', ')}
-          </Text>
-        </View>
-        <View className="m-1 flex-row">
-          <View className="bg-primary-background rounded-md h-9">
-            <Text className="text-text-light ml-1 p-1 min-w-24 text-lg ">
-              Nghĩa
-            </Text>
-          </View>
-          <Text className="justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]">
-            {kanji?.meaning}
-          </Text>
-        </View>
+        ))}
       </View>
     </ScrollView>
   );

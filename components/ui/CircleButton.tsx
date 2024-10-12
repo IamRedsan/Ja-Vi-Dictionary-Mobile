@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { cssInterop, useColorScheme } from 'nativewind';
+import { cssInterop } from 'nativewind';
 
 cssInterop(FontAwesome, {
   className: {

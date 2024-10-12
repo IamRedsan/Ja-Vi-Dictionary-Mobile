@@ -19,7 +19,6 @@ const Kanji = () => {
         <Button>Hello</Button>
       </Link>
       <View className="w-full h-full">
-        {/* <KanjiListItem {...kanji_item} /> */}
         <KanjiListContainer></KanjiListContainer>
       </View>
     </>

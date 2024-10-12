@@ -19,6 +19,7 @@ web-build/
 expo-env.d.ts
 # @end expo-cli
 
+.env
 
 constants/jlptN3.json
 constants/jlptN4.json

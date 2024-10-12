@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import Loading from '../ui/Loading';
 
 const { width, height } = Dimensions.get('window');

@@ -8,13 +8,11 @@ import KanjiListItem from './KanjiListItem';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useColorScheme } from 'nativewind';
 import KanjiListLoading from '../loading/KanjiLIstLoading';
-import { kanjiListN5 } from '@/constants/jlptN5';
-import { kanjiListN4 } from '@/constants/jlptN4';
+import { KANJI_LIST_PAGESIZE } from '@/constants/PageSize';
+import axios from 'axios';
 
 interface Kanji {
-  _id: {
-    $oid: string;
-  };
+  _id: string;
   text: string;
   phonetic: string;
 }
@@ -34,13 +32,12 @@ interface CurPage {
   '2': number;
   '1': number;
 }
-
-interface IsListEnd {
-  '5': boolean;
-  '4': boolean;
-  '3': boolean;
-  '2': boolean;
-  '1': boolean;
+interface TotalPage {
+  '5': number;
+  '4': number;
+  '3': number;
+  '2': number;
+  '1': number;
 }
 
 const KanjiListContainer: React.FC = () => {
@@ -62,82 +59,80 @@ const KanjiListContainer: React.FC = () => {
     '2': 1,
     '1': 1,
   });
-  const [isListEnd, setIsListEnd] = useState<IsListEnd>({
-    '5': false,
-    '4': false,
-    '3': false,
-    '2': false,
-    '1': false,
+  const [totalPage, setTotalPage] = useState<TotalPage>({
+    '5': 1,
+    '4': 1,
+    '3': 1,
+    '2': 1,
+    '1': 1,
   });
 
   const getKanjiList = (level: string): Kanji[] =>
     listKanji[level as keyof KanjiList];
   const getCurPage = (level: string): number => curPage[level as keyof CurPage];
-  const getIsListEnd = (level: string): boolean =>
-    isListEnd[level as keyof IsListEnd];
+  const getToTalPage = (level: string): number =>
+    totalPage[level as keyof TotalPage];
 
   const { colorScheme } = useColorScheme();
 
   useEffect(() => {
     const loadData = async () => {
-      const waitForTwoSeconds = () => {
-        return new Promise((resolve) => {
-          setTimeout(resolve, 2000);
-        });
-      };
       if (!getKanjiList(jlptLevel).length) {
         setIsLoadingTable(true);
+        await appendData();
+        setIsLoadingTable(false);
       }
-      await waitForTwoSeconds();
-      await appendData();
-      setIsLoadingTable(false);
     };
     loadData();
+  }, [jlptLevel]);
+
+  useEffect(() => {
+    const loadMoreData = async () => {
+      if (getCurPage(jlptLevel) >= 2) {
+        await appendData();
+      }
+    };
+    loadMoreData();
   }, [curPage]);
 
   const appendData = async () => {
-    if (getIsListEnd(jlptLevel)) return;
+    if (getCurPage(jlptLevel) > getToTalPage(jlptLevel)) return;
 
-    let newKanjiList: Kanji[] = [];
-    const pageSize = 40;
+    const pageSize = KANJI_LIST_PAGESIZE;
     const currentPage = getCurPage(jlptLevel);
 
-    if (jlptLevel === '5') {
-      newKanjiList = kanjiListN5.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/kanjis/jlpt`,
+        {
+          params: {
+            page: currentPage,
+            limit: pageSize,
+            level: jlptLevel,
+          },
+        }
       );
-    } else if (jlptLevel === '4') {
-      newKanjiList = kanjiListN4.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-      );
-    }
-
-    if (newKanjiList.length === 0) {
-      //cái này tạm sau có totalpage sửa sau nha :3
-      setIsListEnd((prevState) => ({
+      setTotalPage((prevState) => ({
         ...prevState,
-        [jlptLevel]: true,
+        [jlptLevel]: response.data.totalPages,
       }));
 
-      setCurPage((prevState) => ({
-        ...prevState,
-        [jlptLevel]: prevState[jlptLevel as keyof CurPage] - 1,
-      }));
-    } else {
       setListKanji((prevState) => ({
         ...prevState,
         [jlptLevel]: [
           ...prevState[jlptLevel as keyof KanjiList],
-          ...newKanjiList,
+          ...(response.data.data || null),
         ],
       }));
+    } catch (error) {
+      //toast ERROR
+      setIsLoadingTable(false);
+      console.log(error);
     }
   };
 
   const renderFooter: React.FC = () => {
-    return getIsListEnd(jlptLevel) ? null : (
+    return getCurPage(jlptLevel) >= getToTalPage(jlptLevel) ? null : (
       <View className="bg-secondary-background">
         <CircleLoading></CircleLoading>
       </View>
@@ -228,10 +223,10 @@ const KanjiListContainer: React.FC = () => {
               />
             </View>
           )}
-          keyExtractor={(item) => item._id.$oid}
+          keyExtractor={(item) => item._id}
           numColumns={4}
           onEndReached={() => {
-            if (!getIsListEnd(jlptLevel)) {
+            if (getCurPage(jlptLevel) < getToTalPage(jlptLevel)) {
               setCurPage((prevState) => ({
                 ...prevState,
                 [jlptLevel]: prevState[jlptLevel as keyof CurPage] + 1,
