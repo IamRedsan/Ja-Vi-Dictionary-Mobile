@@ -1,11 +1,18 @@
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
 import KanjiContainer from '@/components/kanji/KanjiContainer';
 
-const Kanji = () => {
+const Kanji: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  return <View>{id && <KanjiContainer _id={id} />}</View>;
+  return (
+    <ScrollView className="bg-secondary-background ">
+      {id && <KanjiContainer _id={id} />}
+      <View>
+        <Text>Comment</Text>
+      </View>
+    </ScrollView>
+  );
 };
 export default Kanji;

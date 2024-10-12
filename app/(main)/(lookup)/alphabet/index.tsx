@@ -10,7 +10,7 @@ const Alphabet = () => {
 
   return (
     <ScrollView className="bg-primary-background">
-      <Table isDefaultHiragana={isHiragana}></Table>
+      <Table isDefaultHiragana={isHiragana} />
     </ScrollView>
   );
 };
