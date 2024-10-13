@@ -8,7 +8,7 @@ const Translate = () => {
 
   return (
     <ScrollView className="bg-primary-background">
-      <Link href="/alphabet" asChild>
+      <Link href="/dictionary/1" asChild>
         <Button>Login</Button>
       </Link>
       <View className="pb-5">

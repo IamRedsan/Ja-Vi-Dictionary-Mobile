@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import KanjiGu_ide from './KanjiGuide';
 import KanjiLoading from '../loading/KanjiLoading';
 import axios from 'axios';
 
 interface KanjiContainerProps {
   _id: string;
+  kanji?: Kanji;
 }
 
 interface Kanji {
@@ -35,10 +36,13 @@ interface RelatedWords {
   phonetic: string;
 }
 
-const KanjiContainer: React.FC<KanjiContainerProps> = ({ _id }) => {
+const KanjiContainer: React.FC<KanjiContainerProps> = ({
+  _id,
+  kanji: initialKanji,
+}) => {
   const kanjiRef = useRef<any>(null);
-  const [kanji, setKanji] = useState<Kanji>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [kanji, setKanji] = useState<Kanji | undefined>(initialKanji);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialKanji);
   const [relatedWord, setRelatedWords] = useState<RelatedWords[]>([]);
   const [kanjiAttribute, setKanjiAttribute] = useState<KanjiAttribute[]>([]);
 
@@ -75,9 +79,11 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({ _id }) => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    getData(_id).then(() => setIsLoading(false));
-  }, [_id]);
+    if (!initialKanji && _id) {
+      setIsLoading(true);
+      getData(_id).then(() => setIsLoading(false));
+    }
+  }, [_id, initialKanji]);
 
   useEffect(() => {
     if (kanji) {
@@ -102,14 +108,14 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({ _id }) => {
 
   if (isLoading) {
     return (
-      <ScrollView className="bg-secondary-background h-full">
+      <View className="bg-secondary-background h-full">
         <KanjiLoading />
-      </ScrollView>
+      </View>
     );
   }
 
   return (
-    <ScrollView className="bg-secondary-background h-full">
+    <View className="h-auto">
       <View className="justify-center items-center w-full mt-3">
         <KanjiGu_ide
           size={120}
@@ -131,7 +137,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({ _id }) => {
           </View>
         ))}
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

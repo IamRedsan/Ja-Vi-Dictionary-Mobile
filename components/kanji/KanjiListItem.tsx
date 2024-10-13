@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { View, Text, Pressable, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 interface KanjiListItemProps {
   _id: string;

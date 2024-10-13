@@ -26,11 +26,16 @@ module.exports = {
           DEFAULT: 'var(--text)',
           light: 'var(--text-light)',
           button: 'var(--text-button)',
+          soft: 'var(--text-soft)'
         },
         form: {
           label: 'var(--form-label)',
         },
         icon: 'var(--icon)',
+        line:{
+          DEFAULT: 'var(--primary)',
+          unactive: 'var(--unactive-line)',
+        }
       },
     },
   },
