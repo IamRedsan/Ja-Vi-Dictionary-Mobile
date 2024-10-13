@@ -1,21 +1,47 @@
 import CircleButton from '@/components/ui/CircleButton';
 import { Link } from 'expo-router';
-import { cssInterop } from 'nativewind';
 import React from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-cssInterop(SafeAreaView, {
-  className: {
-    target: 'style',
-    nativeStyleToProp: { height: true, width: true, size: true },
-  } as any,
-});
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { useColorScheme } from 'nativewind';
 
 const Navigate: React.FC = () => {
+  const { colorScheme } = useColorScheme();
+  const insets = useSafeAreaInsets();
   return (
     <>
-      <SafeAreaView className='bg-primary-background' />
+      <View
+        className='bg-primary-foreground px-6 pb-2'
+        style={{
+          paddingTop: insets.top,
+        }}>
+        <View className='flex-row justify-center items-center mx-4 gap-4'>
+          <Link href='/search' asChild>
+            <Pressable className='bg-primary-search rounded-3xl w-full p-2'>
+              <Text className='text-text-light text-lg ml-2'>
+                Tra từ vựng, hán tự,...
+              </Text>
+            </Pressable>
+          </Link>
+          <Link href='/search' asChild>
+            <TouchableOpacity>
+              <FontAwesome5
+                name='search'
+                size={24}
+                color={colorScheme === 'light' ? '#343a40' : '#ffbade'}
+              />
+            </TouchableOpacity>
+          </Link>
+        </View>
+      </View>
       <ScrollView className='bg-primary-background '>
         <View className='items-center flex-col flex-1'>
           <Image

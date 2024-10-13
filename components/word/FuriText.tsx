@@ -18,15 +18,15 @@ export function FuriText({
   const pairs = useFuriPairs(word, reading, furi);
 
   return (
-    <View className="flex flex-row flex-wrap my-2">
+    <View className='flex flex-row flex-wrap my-2'>
       {pairs.map(([furiText, text]: any, index: any) => (
-        <View key={index} className="flex flex-col items-center justify-end">
+        <View key={index} className='flex flex-col items-center justify-end'>
           {showFuri && (
-            <Text className="text-sm text-text-light opacity-90">
+            <Text className='text-sm text-text-light opacity-90'>
               {furiText}
             </Text>
           )}
-          <Text className="text-lg text-text">{text}</Text>
+          <Text className='text-lg text-text'>{text}</Text>
         </View>
       ))}
     </View>

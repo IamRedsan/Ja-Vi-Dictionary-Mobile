@@ -10,8 +10,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title, className }) => {
   return (
     <View
-      className={`flex-row items-center gap-2 mx-4 my-2 ${className ?? ''}`}
-    >
+      className={`flex-row items-center gap-2 mx-4 my-2 ${className ?? ''}`}>
       <View>
         <Text className='text-gray-500'>{title}</Text>
       </View>

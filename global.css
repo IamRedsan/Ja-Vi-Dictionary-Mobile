@@ -17,7 +17,8 @@
   --loading-background: #e1e1e1;
   --form-label: #333333;
   --icon: #343a40;
-  --unactive-line: #B3B3B3
+  --unactive-line: #B3B3B3;
+  --search-bar: #f0f0f0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,5 +38,6 @@
     --form-label: #969596;
     --icon: #ffbade;
     --unactive-line: #201E30;
+    --search-bar: #403f4f;
   }
 }

@@ -17,11 +17,11 @@ const MainLayout: React.FC = () => {
         tabBarStyle: {
           backgroundColor: chosenColors.background,
           borderColor: chosenColors.background,
+          borderTopWidth: 0,
         },
         headerShown: false,
       }}
-      initialRouteName='(lookup)'
-    >
+      initialRouteName='(lookup)'>
       <Tabs.Screen
         name='(lookup)'
         options={{

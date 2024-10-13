@@ -46,8 +46,7 @@ const ForgotPassword: React.FC = () => {
           </View>
           <Button
             className='mt-[20px]'
-            onPress={() => router.navigate('/forgot-password/reset-password')}
-          >
+            onPress={() => router.navigate('/forgot-password/reset-password')}>
             Xác nhận
           </Button>
         </View>

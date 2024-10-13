@@ -18,19 +18,17 @@ const KanjiListItem: React.FC<KanjiListItemProps> = ({
 }) => {
   return (
     <Link href={('/kanji/' + _id) as any} asChild>
-      <TouchableOpacity className="flex-col bg-secondary-background min-h-16 px-2 py-4">
+      <TouchableOpacity className='flex-col bg-secondary-background min-h-16 px-2 py-4'>
         <Text
           className={`text-primary text-4xl font-medium text-center ${
             isShowText ? '' : 'opacity-0'
-          }`}
-        >
+          }`}>
           {text}
         </Text>
         <Text
           className={`text-text text-xl text-center  ${
             isShowPhonetic ? '' : 'opacity-0'
-          }`}
-        >
+          }`}>
           {phonetic}
         </Text>
       </TouchableOpacity>

@@ -17,8 +17,7 @@ const LookupLayout: React.FC = () => {
         },
         headerTintColor: chosenColors.tintColor,
         headerBackTitleVisible: false,
-      }}
-    >
+      }}>
       <Stack.Screen
         name='navigate/index'
         options={{ headerShown: false, headerBackground: undefined }}
@@ -47,6 +46,14 @@ const LookupLayout: React.FC = () => {
           title: 'Kanji',
         }}
       />
+      <Stack.Screen
+        name='search/index'
+        options={{
+          animation: 'none',
+          headerBackground: undefined,
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };
@@ -55,9 +62,9 @@ export default LookupLayout;
 
 const colors = {
   light: {
-    tintColor: '#000000',
+    tintColor: '#343a40',
   },
   dark: {
-    tintColor: '#ffffff',
+    tintColor: '#ffbade',
   },
 };
