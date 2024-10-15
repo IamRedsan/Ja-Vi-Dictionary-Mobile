@@ -8,6 +8,7 @@ module.exports = {
         primary: {
           DEFAULT: 'var(--primary)',
           background: 'var(--primary-background)',
+          foreground: 'var(--primary-foreground)',
         },
         secondary: {
           DEFAULT: 'var(--secondary)',
@@ -17,10 +18,10 @@ module.exports = {
           background: 'var(--tertiary-background)',
         },
         loading: {
-          DEFAULT: 'var(--loading-background)'
+          DEFAULT: 'var(--loading-background)',
         },
-        quaternary:{
-          DEFAULT: 'var(--quaternary)'
+        quaternary: {
+          DEFAULT: 'var(--quaternary)',
         },
         text: {
           DEFAULT: 'var(--text)',

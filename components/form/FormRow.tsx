@@ -5,7 +5,7 @@ import React from 'react';
 interface FormRowProps {
   label: string;
   text: string;
-  onChangeText: (value: string) => void;
+  onChangeText?: (value: string) => void;
   placeHolder?: string;
   errMsg?: string;
   className?: string;
