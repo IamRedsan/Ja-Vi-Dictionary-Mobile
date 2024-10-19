@@ -11,8 +11,7 @@ const RootLayout: React.FC = () => {
           headerShown: false,
           animationTypeForReplace: 'push',
           animation: 'slide_from_bottom',
-        }}
-      >
+        }}>
         <Stack.Screen name='(main)' />
         <Stack.Screen
           name='(auth)'

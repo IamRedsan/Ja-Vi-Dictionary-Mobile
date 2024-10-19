@@ -9,6 +9,7 @@ module.exports = {
           DEFAULT: 'var(--primary)',
           background: 'var(--primary-background)',
           foreground: 'var(--primary-foreground)',
+          search: 'var(--search-bar)'
         },
         secondary: {
           DEFAULT: 'var(--secondary)',
@@ -36,9 +37,15 @@ module.exports = {
         line:{
           DEFAULT: 'var(--primary)',
           unactive: 'var(--unactive-line)',
+        },
+        type:{
+          kanjiYellow: '#F0C132',
+          dictionaryBlue: '#3C78D8',
         }
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwindcss-hit-slop"),
+  ],
 };

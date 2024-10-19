@@ -4,9 +4,9 @@ import React from 'react';
 const KanjiLayout: React.FC = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
+      <Stack.Screen name='index' />
       <Stack.Screen
-        name="[id]"
+        name='[id]'
         options={{
           presentation: 'modal',
         }}

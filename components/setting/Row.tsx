@@ -29,8 +29,7 @@ const Row = forwardRef<TouchableOpacity, RowProps>(
       <TouchableOpacity
         className='flex-row items-center py-3 px-4'
         ref={ref}
-        {...rest}
-      >
+        {...rest}>
         <View className='bg-primary-foreground w-11 h-11 rounded-full flex justify-center items-center mr-4'>
           <FontAwesome name={icon} className='text-text text-[24px]' />
         </View>

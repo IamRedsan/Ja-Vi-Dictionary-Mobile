@@ -43,8 +43,7 @@ const Avatar: React.FC<AvatarProps> = ({
         {isPressable && (
           <TouchableOpacity
             onPress={onPress}
-            className='absolute right-0 bottom-0 bg-primary-foreground w-[50px] h-[50px] aspect-square rounded-full flex items-center justify-center border-[4px] border-primary-background'
-          >
+            className='absolute right-0 bottom-0 bg-primary-foreground w-[50px] h-[50px] aspect-square rounded-full flex items-center justify-center border-[4px] border-primary-background'>
             <FontAwesome name='camera' className='text-text text-[20px]' />
           </TouchableOpacity>
         )}

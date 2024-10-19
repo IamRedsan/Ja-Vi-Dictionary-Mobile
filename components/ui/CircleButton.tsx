@@ -29,12 +29,11 @@ const CircleButton = forwardRef<TouchableOpacity, CircleButtonProps>(
           className ? className : ''
         }`}
         ref={ref}
-        {...rest}
-      >
+        {...rest}>
         {iconName ? (
-          <FontAwesome name={iconName} className="text-white text-4xl" />
+          <FontAwesome name={iconName} className='text-white text-4xl' />
         ) : (
-          text && <Text className="text-white text-4xl font-bold">{text}</Text>
+          text && <Text className='text-white text-4xl font-bold'>{text}</Text>
         )}
       </TouchableOpacity>
     );

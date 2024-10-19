@@ -17,8 +17,7 @@ const SettingLayout: React.FC = () => {
         },
         headerTintColor: chosenColors.tintColor,
         headerBackTitleVisible: false,
-      }}
-    >
+      }}>
       <Stack.Screen
         name='index'
         options={{ headerShown: false, headerBackground: undefined }}
@@ -49,9 +48,9 @@ export default SettingLayout;
 
 const colors = {
   light: {
-    tintColor: '#000000',
+    tintColor: '#343a40',
   },
   dark: {
-    tintColor: '#ffffff',
+    tintColor: '#ffbade',
   },
 };

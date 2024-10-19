@@ -133,7 +133,7 @@ const KanjiListContainer: React.FC = () => {
 
   const renderFooter: React.FC = () => {
     return getCurPage(jlptLevel) >= getToTalPage(jlptLevel) ? null : (
-      <View className="bg-secondary-background">
+      <View className='bg-secondary-background'>
         <CircleLoading></CircleLoading>
       </View>
     );
@@ -157,52 +157,49 @@ const KanjiListContainer: React.FC = () => {
   };
 
   return (
-    <View className="bg-primary-background h-full flex-col">
-      <View className="flex-row h-auto gap-2 py-5 ">
-        <View className="pl-2">
+    <View className='bg-primary-background h-full flex-col'>
+      <View className='flex-row h-auto gap-2 py-5 '>
+        <View className='pl-2'>
           <PickerSelect
-            className="bg-secondary-background rounded-xl w-24 flex-row justify-between items-center min-h-10 px-1 border-[0.2px]"
+            className='bg-secondary-background rounded-xl w-24 flex-row justify-between items-center min-h-10 px-1 border-[0.2px]'
             value={jlptLevel}
             items={jlptLevelEnum}
             setValue={(value) => setJlptLevel(value)}
           />
         </View>
         <TouchableOpacity
-          className="flex-row bg-secondary-background rounded-xl justify-center items-center gap-2 px-2 border-[0.2px]"
+          className='flex-row bg-secondary-background rounded-xl justify-center items-center gap-2 px-2 border-[0.2px]'
           onPress={() => {
             setShowText(!showText);
-          }}
-        >
+          }}>
           <CheckBox
             isCheck={showText}
             onClick={() => {
               setShowText(!showText);
             }}
           />
-          <Text className="text-text">Hán Tự</Text>
+          <Text className='text-text'>Hán Tự</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="flex-row bg-secondary-background rounded-xl justify-center items-center gap-2 px-2 border-[0.2px]"
+          className='flex-row bg-secondary-background rounded-xl justify-center items-center gap-2 px-2 border-[0.2px]'
           onPress={() => {
             setShowPhonetic(!showPhonetic);
-          }}
-        >
+          }}>
           <CheckBox
             isCheck={showPhonetic}
             onClick={() => {
               setShowPhonetic(!showPhonetic);
             }}
           />
-          <Text className="text-text">Hán Việt</Text>
+          <Text className='text-text'>Hán Việt</Text>
         </TouchableOpacity>
-        <View className="flex-grow" />
+        <View className='flex-grow' />
         <TouchableOpacity
-          className="justify-center pr-2"
-          onPress={handleShuffleKanji}
-        >
+          className='justify-center pr-2'
+          onPress={handleShuffleKanji}>
           <FontAwesome6
-            name="shuffle"
+            name='shuffle'
             size={20}
             color={colorScheme === 'light' ? '#343a40' : '#ffbade'}
           />
@@ -212,10 +209,10 @@ const KanjiListContainer: React.FC = () => {
         <KanjiListLoading></KanjiListLoading>
       ) : (
         <FlatList
-          className="bg-secondary-background mx-4 rounded-xl"
+          className='bg-secondary-background mx-4 rounded-xl'
           data={getKanjiList(jlptLevel)}
           renderItem={({ item }) => (
-            <View className="w-1/4">
+            <View className='w-1/4'>
               <KanjiListItem
                 {...item}
                 isShowPhonetic={showPhonetic}

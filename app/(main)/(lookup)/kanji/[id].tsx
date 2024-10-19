@@ -7,7 +7,7 @@ const Kanji: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <ScrollView className="bg-secondary-background ">
+    <ScrollView className='bg-secondary-background '>
       {id && <KanjiContainer _id={id} />}
       <View>
         <Text>Comment</Text>

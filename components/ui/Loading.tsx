@@ -27,15 +27,13 @@ const Loading: React.FC<LoadingProps> = ({ borderRadius, height, width }) => {
       colors={color}
       style={{
         backgroundColor: colorScheme === 'light' ? '#e1e1e1' : '#32304a',
-      }}
-    >
+      }}>
       <View
         style={{
           height: height,
           width: width,
           borderRadius: borderRadius,
-        }}
-      ></View>
+        }}></View>
     </SkeletonContainer>
   );
 };

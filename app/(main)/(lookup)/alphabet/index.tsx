@@ -9,7 +9,7 @@ const Alphabet = () => {
   const isHiragana = isDefaultHiragana === 'true';
 
   return (
-    <ScrollView className="bg-primary-background">
+    <ScrollView className='bg-primary-background'>
       <Table isDefaultHiragana={isHiragana} />
     </ScrollView>
   );

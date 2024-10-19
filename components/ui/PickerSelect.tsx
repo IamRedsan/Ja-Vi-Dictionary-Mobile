@@ -30,8 +30,7 @@ const PickerSelect: React.FC<PickerSelectProps> = ({
       onPress={() => {
         pickerRef.current?.togglePicker();
       }}
-      className={className}
-    >
+      className={className}>
       <View>
         <RNPickerSelect
           ref={pickerRef}
@@ -50,14 +49,14 @@ const PickerSelect: React.FC<PickerSelectProps> = ({
           items={items}
           value={tempValue}
           placeholder={{}}
-          doneText="Xác nhận"
+          doneText='Xác nhận'
           style={style}
           useNativeAndroidPickerStyle={false}
         />
       </View>
-      <View className="pr-2">
+      <View className='pr-2'>
         <FontAwesome
-          name="chevron-down"
+          name='chevron-down'
           size={12}
           color={colorScheme === 'light' ? '#525356' : '#fefefe'}
         />

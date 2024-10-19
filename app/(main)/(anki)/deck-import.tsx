@@ -1,9 +1,9 @@
-import { View, Text } from 'react-native'
+import { View, Text } from 'react-native';
 const DeckImport = () => {
   return (
     <View>
       <Text>DeckImport</Text>
     </View>
-  )
-}
-export default DeckImport
+  );
+};
+export default DeckImport;
