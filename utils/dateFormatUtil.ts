@@ -2,15 +2,15 @@ export const dateFormat = (isoTimestamp: Date) => {
   // Create a Date object from the ISO timestamp
   const date = new Date(isoTimestamp);
 
-  // Extract the components
-  const hours = String(date.getUTCHours()).padStart(2, '0');
-  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-  const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
-  const year = date.getUTCFullYear();
+  // Extract the components (using local time)
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = date.getFullYear();
 
-  // Format the date and time
-  const formattedTime = `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+  // Format the date and time in DD/MM/YYYY HH:mm:ss
+  const formattedTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   return formattedTime;
 };
