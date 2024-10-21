@@ -7,14 +7,14 @@ import CircleLoading from '../loading/CircleLoading';
 import KanjiListItem from './KanjiListItem';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useColorScheme } from 'nativewind';
-import KanjiListLoading from '../loading/KanjiListLoading';
 import { KANJI_LIST_PAGESIZE } from '@/constants/PageSize';
 import axios from 'axios';
+import KanjiListLoading from '../loading/KanjiListLoading';
 
 interface Kanji {
   _id: string;
   text: string;
-  phonetic: string;
+  phonetic: string[];
 }
 
 interface KanjiList {
@@ -206,7 +206,7 @@ const KanjiListContainer: React.FC = () => {
         </TouchableOpacity>
       </View>
       {isLoadingTable ? (
-        <KanjiListLoading></KanjiListLoading>
+        <KanjiListLoading />
       ) : (
         <FlatList
           className='bg-secondary-background mx-4 rounded-xl'

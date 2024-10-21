@@ -4,7 +4,7 @@ import { Text, TouchableOpacity } from 'react-native';
 interface KanjiListItemProps {
   _id: string;
   text: string;
-  phonetic: string;
+  phonetic: string[];
   isShowText: boolean;
   isShowPhonetic: boolean;
 }
@@ -29,7 +29,7 @@ const KanjiListItem: React.FC<KanjiListItemProps> = ({
           className={`text-text text-xl text-center  ${
             isShowPhonetic ? '' : 'opacity-0'
           }`}>
-          {phonetic}
+          {phonetic[0]}
         </Text>
       </TouchableOpacity>
     </Link>

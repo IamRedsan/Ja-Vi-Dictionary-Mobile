@@ -1,10 +1,18 @@
 import { HistoryEnum } from '@/constants/HistoryEnum';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import HistoryItem from './HistoryItem';
 import { useFocusEffect } from 'expo-router';
 import { useColorScheme } from 'nativewind';
+import HistoryLoading from '../loading/HistoryLoading';
 
 interface HistoryItem {
   ordinal: number;
@@ -17,6 +25,7 @@ interface HistoryItem {
 const ListHistory: React.FC = () => {
   const [histories, setHistories] = useState<HistoryItem[]>([]);
   const [isEditAble, setIsEditAble] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true); // Thêm trạng thái loading
   const { colorScheme } = useColorScheme();
   const imageSource =
     colorScheme === 'dark'
@@ -42,19 +51,44 @@ const ListHistory: React.FC = () => {
       setHistories(storedHistory ? JSON.parse(storedHistory) : []);
     } catch (error) {
       console.error('Error loading history:', error);
+    } finally {
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    // loadHistory();c
-    // handleDeleteHistories();
-  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       loadHistory();
     }, [])
   );
+
+  if (loading) {
+    return (
+      <>
+        <View className='flex-row justify-between p-4 mt-2 items-center rounded-t-2xl bg-primary-foreground'>
+          <TouchableOpacity
+            className='hit-slop-4 z-10'
+            onPress={() => {
+              setIsEditAble(!isEditAble);
+            }}>
+            <Text className='text-text'>{isEditAble ? 'Xong' : 'Sửa'}</Text>
+          </TouchableOpacity>
+          <Text className='text-text absolute left-0 right-0 text-center'>
+            Lịch sử tìm kiếm
+          </Text>
+          <TouchableOpacity
+            className='hit-slop-4 z-10'
+            onPress={handleDeleteHistories}
+            disabled={!isEditAble}>
+            <Text className={`text-text ${isEditAble ? '' : 'opacity-50'}`}>
+              Xóa hết
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <HistoryLoading />
+      </>
+    );
+  }
 
   return (
     <>
@@ -102,4 +136,5 @@ const ListHistory: React.FC = () => {
     </>
   );
 };
+
 export default ListHistory;

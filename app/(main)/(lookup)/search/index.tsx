@@ -1,4 +1,3 @@
-import HistoryItem from '@/components/history/HistoryItem';
 import KanjiLinkItem from '@/components/word/KanjiLinkItem';
 import WordLinkItem from '@/components/word/WordLinkItem';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -6,17 +5,18 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
 import { useNavigation } from 'expo-router';
 import { useColorScheme } from 'nativewind';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   TextInput,
   TouchableOpacity,
   Text,
   FlatList,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import debounce from 'debounce';
 import ListHistory from '@/components/history/ListHistory';
+import CircleLoading from '@/components/loading/CircleLoading';
 
 interface WordResult {
   _id: string;
@@ -38,15 +38,32 @@ const Search: React.FC = () => {
   const { colorScheme } = useColorScheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const [searchTitle, setSearchTitle] = useState<string>('');
   const [searchValue, setSearchValue] = useState<string>('');
   const [isSearchWord, setIsSearchWord] = useState<boolean>(true);
   const [wordResult, setWordResult] = useState<WordResult[]>([]);
   const [kanjiResult, setKanjiResult] = useState<KanjiResult[]>([]);
-  const [history, setHistory] = useState<any>([]);
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const imageSource =
+    colorScheme === 'dark'
+      ? require('../../../../assets/images/no-results-dark.png')
+      : require('../../../../assets/images/no-results-light.png');
   useEffect(() => {
     inputRef.current.focus();
   }, []);
+
+  const debounce = () => {
+    let id: ReturnType<typeof setTimeout>;
+    return (text: string) => {
+      clearTimeout(id);
+      setSearchTitle(text);
+      id = setTimeout(() => {
+        setSearchValue(text);
+      }, 500);
+    };
+  };
+
+  const opitimizeDebouce = useMemo(() => debounce(), []);
 
   const getResult = async () => {
     try {
@@ -60,29 +77,29 @@ const Search: React.FC = () => {
           },
         }
       );
+      if (response.status !== 200) {
+        isSearchWord ? setWordResult([]) : setKanjiResult([]);
+        return;
+      }
       isSearchWord
         ? setWordResult(response.data.data)
         : setKanjiResult(response.data.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (searchValue.length === 0 || !searchValue) {
       isSearchWord ? setWordResult([]) : setKanjiResult([]);
-    } else {
-      debounceGetResult();
+      setIsLoading(false);
+      return;
     }
-
-    return () => {
-      debounceGetResult.clear();
-    };
-  }, [searchValue]);
-
-  const debounceGetResult = useCallback(debounce(getResult, 500), [
-    searchValue,
-  ]);
+    setIsLoading(true);
+    getResult();
+  }, [searchValue, isSearchWord]);
 
   return (
     <View className='bg-primary-background flex-1 flex-col'>
@@ -103,8 +120,8 @@ const Search: React.FC = () => {
           </TouchableOpacity>
           <TextInput
             ref={inputRef}
-            value={searchValue}
-            onChangeText={setSearchValue}
+            value={searchTitle}
+            onChangeText={opitimizeDebouce}
             className='bg-primary-search w-[75%] rounded-3xl pt-1 pb-3 pl-4 text-text text-lg'
             placeholder='Tra từ vựng, hán tự,...'
             placeholderTextColor={
@@ -144,18 +161,38 @@ const Search: React.FC = () => {
       </View>
       {searchValue.length === 0 ? (
         <ListHistory />
+      ) : isLoading ? (
+        <View className='mt-4'>
+          <CircleLoading size='large' />
+        </View>
       ) : (
         <FlatList
           data={(isSearchWord ? wordResult : kanjiResult) as any}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => {
             if (isSearchWord) {
-              return <WordLinkItem {...item} />;
+              return (
+                <View className='p-2'>
+                  <WordLinkItem {...item} />
+                </View>
+              );
             } else {
-              return <KanjiLinkItem {...item} />;
+              return (
+                <View className='p-2 flex-col border-b border-line-unactive'>
+                  <KanjiLinkItem {...item} />
+                </View>
+              );
             }
           }}
-          ListEmptyComponent={<Text>No results found.</Text>}
+          contentContainerStyle={{ paddingBottom: 25 }}
+          ListEmptyComponent={
+            <View className='flex-1 justify-center items-center'>
+              <Image source={imageSource} className='size-60 mt-12 mb-6' />
+              <Text className='w-full text-center text-primary text-2xl'>
+                Không có kết quả
+              </Text>
+            </View>
+          }
         />
       )}
     </View>
