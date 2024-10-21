@@ -4,11 +4,16 @@ import Row from './Row';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link } from 'expo-router';
 import React from 'react';
+import { useAppContext } from '@/context/appContext';
 
 const Settings = () => {
+  const { user } = useAppContext();
+
   return (
     <View>
       {settingLinks.map((setting, idx) => {
+        if (setting.requireLogin && !user) return;
+
         return (
           <React.Fragment key={idx}>
             <Header title={setting.section} />
@@ -32,6 +37,7 @@ type FontAwesomeName = keyof typeof FontAwesome.glyphMap;
 
 const settingLinks: {
   section: string;
+  requireLogin: boolean;
   contents: {
     icon: FontAwesomeName;
     title: string;
@@ -40,6 +46,7 @@ const settingLinks: {
 }[] = [
   {
     section: 'Tài khoản',
+    requireLogin: true,
     contents: [
       {
         icon: 'user',
@@ -55,6 +62,7 @@ const settingLinks: {
   },
   {
     section: 'Cài đặt',
+    requireLogin: false,
     contents: [
       {
         icon: 'tint',
@@ -65,6 +73,7 @@ const settingLinks: {
   },
   {
     section: 'Điều hướng',
+    requireLogin: true,
     contents: [
       {
         icon: 'sign-out',

@@ -22,7 +22,7 @@ const Button = forwardRef<TouchableOpacity, ButtonProps>(
   ({ className, startIcon, endIcon, children, ...rest }, ref) => {
     return (
       <TouchableOpacity
-        className={`flex-row items-center justify-center bg-primary rounded-lg p-2 ${
+        className={`disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-primary rounded-lg p-2 ${
           className ? className : ''
         }`}
         ref={ref}
