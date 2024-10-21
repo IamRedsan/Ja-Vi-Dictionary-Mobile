@@ -5,6 +5,7 @@ import KanjiLoading from '../loading/KanjiLoading';
 import axios from 'axios';
 import { HistoryEnum } from '@/constants/HistoryEnum';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import WordLinkItem from '../word/WordLinkItem';
 
 interface KanjiContainerProps {
   _id: string;
@@ -25,6 +26,7 @@ interface Kanji {
     raw_text: string;
     phonetic: string;
   }[];
+  relatedWord: RelatedWords[];
 }
 
 interface KanjiAttribute {
@@ -35,7 +37,8 @@ interface KanjiAttribute {
 interface RelatedWords {
   _id: string;
   text: string;
-  phonetic: string;
+  hiragana: string;
+  meaning: string;
 }
 
 interface HistoryItem {
@@ -53,7 +56,6 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
   const kanjiRef = useRef<any>(null);
   const [kanji, setKanji] = useState<Kanji | undefined>(initialKanji);
   const [isLoading, setIsLoading] = useState<boolean>(!initialKanji);
-  const [relatedWord, setRelatedWords] = useState<RelatedWords[]>([]);
   const [kanjiAttribute, setKanjiAttribute] = useState<KanjiAttribute[]>([]);
 
   const saveHistoryItem = async (newHistory: HistoryItem) => {
@@ -103,22 +105,9 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
     }
   };
 
-  const getRelatedWord = async (text: string) => {
-    try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/kanjis/${_id}`,
-        { params: { text: text } }
-      );
-      setRelatedWords(response.data.data);
-    } catch (error) {
-      throw error;
-    }
-  };
-
   const getData = async (_id: string) => {
     try {
       await getKanji(_id);
-      // await getRelatedWord(kanji!.text);
     } catch (error) {
       //Toast error
     }
@@ -183,6 +172,17 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
           </View>
         ))}
       </View>
+      <View className='mx-3 flex-row gap-2'>
+        <View className='h-full bg-primary w-1'></View>
+        <Text className='text-text'>Từ liên quan</Text>
+      </View>
+      {kanji?.relatedWord &&
+        kanji.relatedWord.length > 0 &&
+        kanji.relatedWord.map((relatedChild) => (
+          <View className='mx-3 my-2 p-2 bg-primary-background rounded-md'>
+            <WordLinkItem {...relatedChild} />
+          </View>
+        ))}
     </View>
   );
 };

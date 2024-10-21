@@ -19,7 +19,7 @@ const WordLinkItem: React.FC<WordLinkItemProp> = ({
 }) => {
   const { colorScheme } = useColorScheme();
   return (
-    <Link href={`dictionary/${_id}`} key={_id} asChild>
+    <Link href={`dictionary/${_id}` as any} key={_id} asChild replace>
       <TouchableOpacity className='px-2 py-3 flex-1 w-full flex-row justify-between'>
         <View className='flex-col'>
           <View className='flex-row gap-2'>

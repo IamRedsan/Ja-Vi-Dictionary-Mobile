@@ -77,10 +77,6 @@ const Search: React.FC = () => {
           },
         }
       );
-      if (response.status !== 200) {
-        isSearchWord ? setWordResult([]) : setKanjiResult([]);
-        return;
-      }
       isSearchWord
         ? setWordResult(response.data.data)
         : setKanjiResult(response.data.data);
@@ -178,8 +174,9 @@ const Search: React.FC = () => {
               );
             } else {
               return (
-                <View className='p-2 flex-col border-b border-line-unactive'>
+                <View className='p-2 flex-col'>
                   <KanjiLinkItem {...item} />
+                  <View className='flex-grow mx-4 h-[0.5px] bg-line-unactive mt-2'></View>
                 </View>
               );
             }
