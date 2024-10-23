@@ -20,7 +20,7 @@ const KanjiLinkItem: React.FC<KanjiLinkItemProps> = ({
 }) => {
   const { colorScheme } = useColorScheme();
   return (
-    <Link href={`/kanji/${_id}`} key={_id} asChild>
+    <Link href={`/kanji/${_id}`} key={_id} asChild replace>
       <TouchableOpacity className='flex-row items-center'>
         {/* Kanji Text Section */}
         <View className='justify-center'>
