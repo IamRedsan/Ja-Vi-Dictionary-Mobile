@@ -8,6 +8,7 @@ const Register: React.FC = () => {
   const [values, setValues] = useState({
     email: '',
     username: '',
+    fullname: '',
     password: '',
     rePassword: '',
   });
@@ -29,21 +30,24 @@ const Register: React.FC = () => {
             placeHolder='name@email.com'
             text={values.email}
             onChangeText={(value) => onChangeText('email', value)}
-            errMsg='Vui lòng nhập email!'
           />
           <FormRow
-            label='Tên tài khoản'
+            label='Tên đăng nhập'
             placeHolder='name'
             text={values.username}
             onChangeText={(value) => onChangeText('username', value)}
-            errMsg='Tên tài khoản đã tồn tại!'
+          />
+          <FormRow
+            label='Họ và tên'
+            placeHolder='fullname'
+            text={values.fullname}
+            onChangeText={(value) => onChangeText('fullname', value)}
           />
           <FormRow
             label='Mật khẩu'
             placeHolder='********'
             text={values.password}
             onChangeText={(value) => onChangeText('password', value)}
-            errMsg='Vui lòng nhập mật khẩu'
             secureTextEntry
           />
           <FormRow
@@ -51,7 +55,6 @@ const Register: React.FC = () => {
             placeHolder='********'
             text={values.password}
             onChangeText={(value) => onChangeText('rePassword', value)}
-            errMsg='Mật khẩu không khớp'
             secureTextEntry
           />
           <Button className='mt-[20px]'>Đăng ký</Button>

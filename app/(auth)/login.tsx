@@ -1,14 +1,18 @@
 import FormRow from '@/components/form/FormRow';
 import Button from '@/components/ui/Button';
-import { Link } from 'expo-router';
+import { useAppContext } from '@/context/appContext';
+import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 const Login: React.FC = () => {
   const [values, setValues] = useState({
-    email: '',
+    username: '',
     password: '',
   });
+
+  const { setUser } = useAppContext();
+  const router = useRouter();
 
   const onChangeText = (key: keyof typeof values, value: string) => {
     setValues((values) => ({
@@ -17,24 +21,35 @@ const Login: React.FC = () => {
     }));
   };
 
+  const fakeLogin = () => {
+    setUser({
+      avatar: '',
+      createdDate: '',
+      email: 'ino_emres@email.com',
+      fullname: 'Kino Hermes',
+      id: 'ino_ermes',
+      role: 'user',
+      username: 'ino_ermes',
+    });
+    router.navigate('/setting');
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View className='bg-tertiary-background flex-1 items-center justify-center'>
         <Text className='text-text text-[24px] mb-10'>Chào mừng trở lại!</Text>
         <View className='w-[80%] gap-4'>
           <FormRow
-            label='Email'
-            placeHolder='name@email.com'
-            text={values.email}
-            onChangeText={(value) => onChangeText('email', value)}
-            errMsg='Vui lòng nhập email!'
+            label='Tên đăng nhập'
+            placeHolder='name'
+            text={values.username}
+            onChangeText={(value) => onChangeText('username', value)}
           />
           <FormRow
             label='Mật khẩu'
             placeHolder='********'
             text={values.password}
             onChangeText={(value) => onChangeText('password', value)}
-            errMsg='Vui lòng nhập mật khẩu'
             secureTextEntry
           />
           <View className='flex-row justify-between'>
@@ -43,7 +58,7 @@ const Login: React.FC = () => {
               Quên mật khẩu?
             </Link>
           </View>
-          <Button>Đăng nhập</Button>
+          <Button onPress={fakeLogin}>Đăng nhập</Button>
         </View>
         <Text className='text-text mt-16'>
           Chưa có tài khoản?{' '}

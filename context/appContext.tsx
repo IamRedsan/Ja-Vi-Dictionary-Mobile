@@ -7,7 +7,7 @@ interface IUser {
   id: string;
   email: string;
   username: string;
-  name: string;
+  fullname: string;
   createdDate: string;
   avatar: string;
   role: 'user' | 'admin';
@@ -22,6 +22,7 @@ export type AppStateType = {
 
 export type AppContextType = AppStateType & {
   setTheme: (theme: ThemeType) => Promise<void>;
+  setUser: (user: IUser) => void;
 };
 
 export const AppContext = createContext<AppContextType | null>(null);
@@ -57,8 +58,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     getTheme();
   }, []);
 
+  const setUser = (user: IUser) => {
+    setState((prev) => ({ ...prev, user }));
+  };
+
   return (
-    <AppContext.Provider value={{ ...state, setTheme }}>
+    <AppContext.Provider value={{ ...state, setTheme, setUser }}>
       {children}
     </AppContext.Provider>
   );
