@@ -83,7 +83,7 @@ const Navigate: React.FC = () => {
             </Text>
             <View className='flex-row justify-between w-[80%] p-2'>
               <View className='items-center flex-col '>
-                <Link href='/(anki)' asChild>
+                <Link href={'/(anki)' as any} asChild>
                   <CircleButton className='size-20' iconName='navicon' />
                 </Link>
                 <Text className='text-text text-xl font-medium'>
