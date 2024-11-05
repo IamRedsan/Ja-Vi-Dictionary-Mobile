@@ -1,4 +1,5 @@
 import Header from '@/components/translate/Header';
+import ImagePickerModal from '@/components/translate/ImagePickerModal';
 import Source from '@/components/translate/Source';
 import Target from '@/components/translate/Target';
 import Button from '@/components/ui/Button';
@@ -11,8 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 cssInterop(SafeAreaView, {
   className: {
     target: 'style',
-    nativeStyleToProp: { height: true, width: true, size: true },
-  } as any,
+  },
 });
 
 const Translate = () => {
@@ -96,9 +96,9 @@ const Translate = () => {
   }, []);
 
   return (
-    <>
+    <View className='relative flex-1'>
       <SafeAreaView className='bg-primary-background' />
-      <ScrollView className='bg-primary-background'>
+      <ScrollView className='bg-primary-background flex-1'>
         <Header
           source={sourceTargetPair[st].source}
           target={sourceTargetPair[st].target}
@@ -123,7 +123,8 @@ const Translate = () => {
           loading={loading}
         />
       </ScrollView>
-    </>
+      <ImagePickerModal />
+    </View>
   );
 };
 

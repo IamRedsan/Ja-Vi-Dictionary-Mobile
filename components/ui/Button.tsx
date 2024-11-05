@@ -6,7 +6,7 @@ import { cssInterop } from 'nativewind';
 cssInterop(FontAwesome, {
   className: {
     target: 'style',
-    nativeStyleToProp: { height: true, width: true, size: true },
+    nativeStyleToProp: { size: true },
   } as any,
 });
 
@@ -16,14 +16,20 @@ interface ButtonProps extends TouchableOpacityProps {
   children?: string;
   startIcon?: FontAwesomeName;
   endIcon?: FontAwesomeName;
+  type?: 'round' | 'primary';
 }
 
+const classNamePrimary =
+  'disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-primary rounded-lg p-2';
+const classNameRound =
+  'disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-primary rounded-full p-2';
+
 const Button = forwardRef<TouchableOpacity, ButtonProps>(
-  ({ className, startIcon, endIcon, children, ...rest }, ref) => {
+  ({ className, startIcon, endIcon, type, children, ...rest }, ref) => {
     return (
       <TouchableOpacity
-        className={`disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-primary rounded-lg p-2 ${
-          className ? className : ''
+        className={`${className ?? ''} ${
+          type === 'round' ? classNameRound : classNamePrimary
         }`}
         ref={ref}
         {...rest}>
