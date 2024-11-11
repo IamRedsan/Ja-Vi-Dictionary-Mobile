@@ -2,39 +2,40 @@ import axios, { AxiosInstance } from 'axios';
 import { useColorScheme } from 'nativewind';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+import { authClient } from '@/client/axiosClient';
 
 interface IUser {
-  id: string;
+  _id: string;
   email: string;
   username: string;
   fullname: string;
-  createdDate: string;
-  avatar: string;
+  avatar?: string;
   role: 'user' | 'admin';
 }
 
 export type AppStateType = {
   user?: IUser;
-  client: AxiosInstance;
-  authClient?: AxiosInstance;
   theme: ThemeType;
 };
 
 export type AppContextType = AppStateType & {
   setTheme: (theme: ThemeType) => Promise<void>;
-  setUser: (user: IUser) => void;
+  setUser: (
+    user: IUser,
+    accessToken: string,
+    refreshToken: string
+  ) => Promise<void>;
+  updateUser: (user: IUser) => void;
+  removeUser: () => Promise<void>;
 };
 
 export const AppContext = createContext<AppContextType | null>(null);
 
 export type ThemeType = 'light' | 'dark' | 'system';
 
-const baseURL = '/api/v1';
-
 const initialState: AppStateType = {
   user: undefined,
-  client: axios.create({ baseURL: baseURL }),
-  authClient: undefined,
   theme: 'light',
 };
 
@@ -49,6 +50,34 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     await AsyncStorage.setItem('theme', theme);
   };
 
+  const setUser = async (
+    user: IUser,
+    accessToken: string,
+    refreshToken: string
+  ) => {
+    setState((prev) => ({
+      ...prev,
+      user,
+    }));
+
+    await SecureStore.setItemAsync('accessToken', accessToken);
+    await SecureStore.setItemAsync('refreshToken', refreshToken);
+  };
+
+  const updateUser = (user: IUser) => {
+    setState((prev) => ({
+      ...prev,
+      user,
+    }));
+  };
+
+  const removeUser = async () => {
+    setState((prev) => ({ ...prev, user: undefined }));
+
+    await SecureStore.deleteItemAsync('accessToken');
+    await SecureStore.deleteItemAsync('refreshToken');
+  };
+
   useEffect(() => {
     const getTheme = async () => {
       const t = ((await AsyncStorage.getItem('theme')) as ThemeType) ?? 'light';
@@ -58,12 +87,31 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     getTheme();
   }, []);
 
-  const setUser = (user: IUser) => {
-    setState((prev) => ({ ...prev, user }));
-  };
+  useEffect(() => {
+    const getUser = async () => {
+      if (!(await SecureStore.getItemAsync('accessToken'))) {
+        return;
+      }
+
+      try {
+        const response = await authClient.get('auth/get-info');
+        const user = response.data.data;
+
+        setState((prev) => ({
+          ...prev,
+          user,
+        }));
+      } catch (err) {
+        console.log(err);
+        removeUser();
+      }
+    };
+    getUser();
+  }, []);
 
   return (
-    <AppContext.Provider value={{ ...state, setTheme, setUser }}>
+    <AppContext.Provider
+      value={{ ...state, setTheme, setUser, removeUser, updateUser }}>
       {children}
     </AppContext.Provider>
   );

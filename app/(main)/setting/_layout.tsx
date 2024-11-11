@@ -27,6 +27,15 @@ const SettingLayout: React.FC = () => {
           title: 'Màu sắc',
         }}
       />
+      <S.Screen
+        name='logout'
+        options={{
+          presentation: 'transparentModal',
+          headerShown: false,
+          headerBackground: undefined,
+          animation: 'slide_from_bottom',
+        }}
+      />
     </Stack>
   );
 };

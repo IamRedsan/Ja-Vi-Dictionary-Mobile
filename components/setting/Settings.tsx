@@ -78,7 +78,7 @@ const settingLinks: {
       {
         icon: 'sign-out',
         title: 'Đăng xuất',
-        link: 'logout',
+        link: '/setting/logout',
       },
     ],
   },
