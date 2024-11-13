@@ -178,8 +178,10 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
       </View>
       {kanji?.relatedWord &&
         kanji.relatedWord.length > 0 &&
-        kanji.relatedWord.map((relatedChild) => (
-          <View className='mx-3 my-2 p-2 bg-primary-background rounded-md'>
+        kanji.relatedWord.map((relatedChild, index) => (
+          <View
+            className='mx-3 my-2 p-2 bg-primary-background rounded-md'
+            key={index}>
             <WordLinkItem {...relatedChild} />
           </View>
         ))}

@@ -1,10 +1,15 @@
-import { Stack } from 'expo-router';
+import Stack from '@/components/Stack';
+import { Stack as S } from 'expo-router';
 import React from 'react';
 
 const TranslateLayout: React.FC = () => {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name='index' />
+    <Stack>
+      <S.Screen
+        name='index'
+        options={{ headerShown: false, headerBackground: undefined }}
+      />
+      <S.Screen name='from-image' options={{ title: 'Dịch từ ảnh' }} />
     </Stack>
   );
 };

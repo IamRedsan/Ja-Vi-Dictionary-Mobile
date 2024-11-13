@@ -22,7 +22,11 @@ const Setting = () => {
       <SafeAreaView className='bg-primary-background' />
       <View className='bg-primary-background flex-1 pt-10'>
         {user ? (
-          <Avatar username='Kino' className='mb-10' />
+          <Avatar
+            username={user.fullname}
+            url={user.avatar}
+            className='mb-10'
+          />
         ) : (
           <View className='h-[50%] justify-center items-center'>
             <Link href='/login' asChild>

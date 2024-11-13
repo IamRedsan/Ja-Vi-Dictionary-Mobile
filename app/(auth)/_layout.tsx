@@ -1,4 +1,5 @@
-import { Slot } from 'expo-router';
+import Stack from '@/components/Stack';
+import { Stack as S } from 'expo-router';
 import { cssInterop } from 'nativewind';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,10 +12,17 @@ cssInterop(SafeAreaView, {
 
 const AuthLayout: React.FC = () => {
   return (
-    <>
-      <SafeAreaView className='bg-tertiary-background' />
-      <Slot />
-    </>
+    <Stack>
+      <S.Screen
+        name='login'
+        options={{ headerShown: false, headerBackground: undefined }}
+      />
+      <S.Screen
+        name='register'
+        options={{ headerShown: false, headerBackground: undefined }}
+      />
+      <S.Screen name='verify' options={{ title: 'Xác thực tài khoản' }} />
+    </Stack>
   );
 };
 
