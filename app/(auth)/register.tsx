@@ -11,7 +11,6 @@ import Toast from 'react-native-toast-message';
 const Register: React.FC = () => {
   const [values, setValues] = useState({
     email: '',
-    username: '',
     fullname: '',
     password: '',
     rePassword: '',
@@ -27,11 +26,19 @@ const Register: React.FC = () => {
   };
 
   const handleRegister = async () => {
+    if (values.password !== values.rePassword) {
+      Toast.show({
+        type: 'info',
+        text1: 'Mật khẩu không khớp',
+        text2: 'Vui lòng kiểm tra lại',
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       await client.post('/auth/sign-up', {
-        username: values.username,
         fullname: values.fullname,
         email: values.email,
         password: values.password,
@@ -64,13 +71,6 @@ const Register: React.FC = () => {
               placeHolder='name@email.com'
               text={values.email}
               onChangeText={(value) => onChangeText('email', value)}
-            />
-            <FormRow
-              editable={!loading}
-              label='Tên đăng nhập'
-              placeHolder='name'
-              text={values.username}
-              onChangeText={(value) => onChangeText('username', value)}
             />
             <FormRow
               editable={!loading}

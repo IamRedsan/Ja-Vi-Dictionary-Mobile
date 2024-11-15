@@ -1,10 +1,11 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const baseURL = 'http://192.168.1.4:4000/api/v1';
+export const baseURL = `${process.env.EXPO_PUBLIC_SERVER_URL}`;
+export const AIBaseURL = `${process.env.EXPO_PUBLIC_AI_URL}`;
 
 export const authClient = axios.create({
-  baseURL,
+  baseURL: `${baseURL}/api/v1`,
 });
 
 authClient.interceptors.request.use(
@@ -63,4 +64,6 @@ authClient.interceptors.response.use(
   }
 );
 
-export const client = axios.create({ baseURL });
+export const client = axios.create({ baseURL: `${baseURL}/api/v1` });
+
+export const aiClient = axios.create({ baseURL: `${AIBaseURL}/api/v1` });

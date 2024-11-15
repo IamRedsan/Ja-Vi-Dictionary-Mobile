@@ -1,12 +1,12 @@
+import { aiClient } from '@/client/axiosClient';
 import EarthLoading from '@/components/loading/EarthLoading';
 import Row from '@/components/translate/Row';
-import { useAppContext } from '@/context/appContext';
-import axios from 'axios';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { cssInterop } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 cssInterop(Image, {
   className: {
@@ -38,8 +38,8 @@ const FromImage = () => {
       } as any);
 
       try {
-        const response = await axios.post(
-          'http://10.20.1.78:5000/api/v1/translate/from-image',
+        const response = await aiClient.post(
+          '/translate/from-image',
           formData,
           {
             headers: {
@@ -51,7 +51,11 @@ const FromImage = () => {
         setImageUrl(imageUrl);
         setResult(result);
       } catch (err) {
-        console.log(err);
+        Toast.show({
+          type: 'error',
+          text1: 'Có gì đó không đúng',
+          text2: '色を重ねて',
+        });
       }
 
       setLoading(false);

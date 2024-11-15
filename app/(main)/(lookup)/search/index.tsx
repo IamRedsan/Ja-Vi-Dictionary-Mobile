@@ -2,7 +2,6 @@ import KanjiLinkItem from '@/components/word/KanjiLinkItem';
 import WordLinkItem from '@/components/word/WordLinkItem';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import axios from 'axios';
 import { useNavigation } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -17,6 +16,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ListHistory from '@/components/history/ListHistory';
 import CircleLoading from '@/components/loading/CircleLoading';
+import { client } from '@/client/axiosClient';
 
 interface WordResult {
   _id: string;
@@ -67,10 +67,8 @@ const Search: React.FC = () => {
 
   const getResult = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/${
-          isSearchWord ? 'words' : 'kanjis'
-        }/search`,
+      const response = await client.get(
+        `/${isSearchWord ? 'words' : 'kanjis'}/search`,
         {
           params: {
             text: searchValue,

@@ -39,7 +39,6 @@ const Login: React.FC = () => {
 
       router.dismiss();
     } catch (err) {
-      console.log(err);
       const e = err as AxiosError;
       if (e.response?.status === 403) {
         Toast.show({

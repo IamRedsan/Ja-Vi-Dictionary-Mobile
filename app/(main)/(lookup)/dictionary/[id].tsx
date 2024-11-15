@@ -1,10 +1,10 @@
+import { client } from '@/client/axiosClient';
 import { WordLoading, ItemLoading } from '@/components/loading/WordLoading';
 import { FuriText } from '@/components/word/FuriText';
 import KanjiLinkItem from '@/components/word/KanjiLinkItem';
 import WordContainer from '@/components/word/WordContainer';
 import { HistoryEnum } from '@/constants/HistoryEnum';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -69,9 +69,7 @@ const Dictionary: React.FC = () => {
   const getWord = async (_id: string) => {
     //api that xoa dong nay
     try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/words/${_id}`
-      );
+      const response = await client.get(`/words/${_id}`);
       setWord(response.data.data);
       let newHistory: HistoryItem = {
         _id: response.data.data._id,

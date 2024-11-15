@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import KanjiGu_ide from './KanjiGuide';
 import KanjiLoading from '../loading/KanjiLoading';
-import axios from 'axios';
 import { HistoryEnum } from '@/constants/HistoryEnum';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WordLinkItem from '../word/WordLinkItem';
+import { client } from '@/client/axiosClient';
 
 interface KanjiContainerProps {
   _id: string;
@@ -89,9 +89,7 @@ const KanjiContainer: React.FC<KanjiContainerProps> = ({
 
   const getKanji = async (_id: string) => {
     try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/kanjis/${_id}`
-      );
+      const response = await client.get(`/kanjis/${_id}`);
       setKanji(response.data.data);
       let newHistory: HistoryItem = {
         _id: response.data.data._id,
