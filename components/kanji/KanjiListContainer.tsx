@@ -8,8 +8,8 @@ import KanjiListItem from './KanjiListItem';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useColorScheme } from 'nativewind';
 import { KANJI_LIST_PAGESIZE } from '@/constants/PageSize';
-import axios from 'axios';
 import KanjiListLoading from '../loading/KanjiListLoading';
+import { client } from '@/client/axiosClient';
 
 interface Kanji {
   _id: string;
@@ -102,16 +102,13 @@ const KanjiListContainer: React.FC = () => {
     const currentPage = getCurPage(jlptLevel);
 
     try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/kanjis/jlpt`,
-        {
-          params: {
-            page: currentPage,
-            limit: pageSize,
-            level: jlptLevel,
-          },
-        }
-      );
+      const response = await client.get(`/kanjis/jlpt`, {
+        params: {
+          page: currentPage,
+          limit: pageSize,
+          level: jlptLevel,
+        },
+      });
       setTotalPage((prevState) => ({
         ...prevState,
         [jlptLevel]: response.data.totalPages,

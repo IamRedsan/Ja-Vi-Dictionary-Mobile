@@ -27,10 +27,17 @@ const Logout = () => {
           Bạn có muốn đăng xuất
         </Text>
         <View className='flex-row justify-center gap-4'>
-          <Button className='w-[100px]' onPress={handleCancel}>
+          <Button
+            className='w-[100px]'
+            onPress={handleCancel}
+            disabled={loading}>
             Huỷ
           </Button>
-          <Button className='w-[100px]' type='dangerous' onPress={handleLogout}>
+          <Button
+            className='w-[100px]'
+            type='dangerous'
+            onPress={handleLogout}
+            disabled={loading}>
             Đăng xuất
           </Button>
         </View>

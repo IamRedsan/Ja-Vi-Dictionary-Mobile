@@ -1,4 +1,3 @@
-import axios, { AxiosInstance } from 'axios';
 import { useColorScheme } from 'nativewind';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -94,7 +93,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       }
 
       try {
-        const response = await authClient.get('auth/get-info');
+        const response = await authClient.get('users/profile');
         const user = response.data.data;
 
         setState((prev) => ({
@@ -102,7 +101,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           user,
         }));
       } catch (err) {
-        console.log(err);
         removeUser();
       }
     };

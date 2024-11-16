@@ -9,6 +9,7 @@ import { ScrollView, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { Redirect } from 'expo-router';
 
 const Profile = () => {
   const { user, updateUser } = useAppContext();
@@ -19,7 +20,7 @@ const Profile = () => {
     setLoading(true);
 
     try {
-      const response = await authClient.post('/auth/update-info', { fullname });
+      const response = await authClient.put('/users/profile', { fullname });
       const { data: user } = response.data;
       updateUser(user);
 
@@ -52,7 +53,7 @@ const Profile = () => {
     } as any);
 
     try {
-      const response = await authClient.post('/auth/update-avatar', formData, {
+      const response = await authClient.put('/users/profile', formData, {
         headers: {
           'content-type': 'multipart/form-data',
         },
@@ -102,22 +103,21 @@ const Profile = () => {
     }
   };
 
+  if (!user) {
+    return <Redirect href='/' />;
+  }
+
   return (
     <ScrollView className='bg-primary-background flex-1 pt-10'>
       <Avatar
         username={user?.fullname ?? ''}
         url={user?.avatar}
         className='mb-10'
-        isPressable
+        isPressable={!loading}
         onPress={pickImage}
       />
       <View className='px-4'>
         <FormRow label='Email' text={user?.email ?? ''} editable={false} />
-        <FormRow
-          label='Tên đăng nhập'
-          text={user?.username ?? ''}
-          editable={false}
-        />
         <FormRow
           label='Họ và tên'
           text={fullname}
