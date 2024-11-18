@@ -20,7 +20,7 @@ const Stack: React.FC<React.ComponentProps<typeof S>> = ({
           return <View className='bg-primary-foreground flex-1' />;
         },
         headerTintColor: chosenColors.tintColor,
-        headerBackTitleVisible: false,
+        headerBackVisible: false,
       }}>
       {children}
     </S>

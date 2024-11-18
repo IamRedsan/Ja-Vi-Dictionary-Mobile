@@ -29,19 +29,17 @@ const HistoryItem: React.FC<HistoryItemProp> = ({
   const { colorScheme } = useColorScheme();
 
   const translateX = useRef(new Animated.Value(0)).current;
-  const deleteIconTranslateX = useRef(new Animated.Value(-50)).current; // Khởi tạo vị trí ban đầu của icon ngoài màn hình
+  const deleteIconTranslateX = useRef(new Animated.Value(-50)).current;
 
   useEffect(() => {
-    // Animation cho toàn bộ item
     Animated.timing(translateX, {
       toValue: isEditable ? 16 : 0,
       duration: 300,
       useNativeDriver: true,
     }).start();
 
-    // Animation cho icon xóa
     Animated.timing(deleteIconTranslateX, {
-      toValue: isEditable ? 8 : -50, // Di chuyển icon từ ngoài vào trong
+      toValue: isEditable ? 8 : -50,
       duration: 300,
       useNativeDriver: true,
     }).start();
