@@ -70,8 +70,8 @@ const HistoryItem: React.FC<HistoryItemProp> = ({
       )}
       <Link
         href={
-          `/${
-            type === HistoryEnum.Kanji ? 'kanji' : 'dictionary'
+          `/dictionary/${
+            type === HistoryEnum.Kanji ? 'kanji' : 'word'
           }/${_id}` as any
         }
         asChild>

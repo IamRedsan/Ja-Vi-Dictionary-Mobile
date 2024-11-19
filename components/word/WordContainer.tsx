@@ -40,8 +40,8 @@ const WordContainer: React.FC<WordContainerProps> = ({
         </View>
       </View>
       {meanings.length > 0 &&
-        meanings.map((meaning) => (
-          <View className='flex-col' key={meaning._id}>
+        meanings.map((meaning, index) => (
+          <View className='flex-col' key={index}>
             <View className='flex-row gap-3'>
               <View className='h-full bg-primary w-1'></View>
               <Text className='text-text '>{meaning.type || 'N/A'}</Text>

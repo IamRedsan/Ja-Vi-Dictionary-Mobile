@@ -47,6 +47,7 @@
     "react-native-dynamic-skeletons": "^0.7.0",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-kanji-animation": "^1.3.0",
+    "react-native-keyboard-avoiding-scroll-view": "^1.0.1",
     "react-native-otp-entry": "^1.7.3",
     "react-native-outside-press": "^1.2.2",
     "react-native-picker-select": "^9.3.1",
