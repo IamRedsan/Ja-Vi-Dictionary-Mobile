@@ -22,16 +22,8 @@ const LookupLayout: React.FC = () => {
         }}
       />
       <S.Screen
-        name='dictionary/[id]'
-        options={{
-          title: 'Từ điển',
-        }}
-      />
-      <S.Screen
-        name='kanji'
-        options={{
-          title: 'Kanji',
-        }}
+        name='dictionary'
+        options={{ headerShown: false, headerBackground: undefined }}
       />
       <S.Screen
         name='search/index'

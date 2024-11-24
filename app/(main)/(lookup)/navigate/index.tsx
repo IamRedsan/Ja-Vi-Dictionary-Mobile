@@ -91,7 +91,7 @@ const Navigate: React.FC = () => {
                 </Text>
               </View>
               <View className='items-center flex-col '>
-                <Link href='/kanji' asChild>
+                <Link href={'/dictionary' as any} asChild>
                   <CircleButton className='size-20' text='漢' />
                 </Link>
                 <Text className='text-text text-xl font-medium'>
