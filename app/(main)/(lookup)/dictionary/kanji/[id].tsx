@@ -1,12 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  View,
-  Keyboard,
-} from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -18,10 +11,16 @@ import { client } from '@/client/axiosClient';
 import { HistoryEnum } from '@/constants/HistoryEnum';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Interface Definitions
-interface KanjiContainerProps {
+interface Comment {
   _id: string;
-  kanji?: Kanji;
+  user: {
+    _id: string;
+    fullname: string;
+    avatar: string;
+  };
+  content: string;
+  liked_by: string[];
+  created_at: string;
 }
 
 interface Kanji {
@@ -39,6 +38,7 @@ interface Kanji {
     phonetic: string;
   }[];
   relatedWord: RelatedWords[];
+  comments: Comment[];
 }
 
 interface KanjiAttribute {
@@ -61,37 +61,9 @@ interface HistoryItem {
   type: HistoryEnum;
 }
 
-// Sample Data
-const tempComments = [
-  {
-    _id: '123',
-    user: {
-      _id: '123',
-      avatar:
-        'https://i.pinimg.com/736x/bc/98/2d/bc982dc97bd14da21fbce45114e0fee1.jpg',
-      fullname: 'Vo Viet Truong',
-    },
-    content: `これは非常に長いテキストの例です。日本語で書かれたこのテキストは、コンテンツがどのように表示されるかをテストするために使用されます。 `,
-    liked_by: [],
-    created_at: '2024-10-20T10:18:08.970Z',
-  },
-  {
-    _id: '124',
-    user: {
-      _id: '124',
-      avatar:
-        'https://i.pinimg.com/736x/bc/98/2d/bc982dc97bd14da21fbce45114e0fee1.jpg',
-      fullname: 'Nguyen Van A',
-    },
-    content: `これは別の長いテキストの例です。日本語で書かれたこのテキストも、コンテンツがどのように表示されるかをテストするために使用されます。 `,
-    liked_by: [],
-    created_at: '2024-10-21T10:18:08.970Z',
-  },
-];
-
 const Kanji: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const scrollViewRef = useRef<ScrollView>(null);
+  // const scrollViewRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
   const [kanji, setKanji] = useState<Kanji | undefined>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -173,18 +145,18 @@ const Kanji: React.FC = () => {
     }
   }, [kanji]);
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }
-    );
+  // useEffect(() => {
+  //   const keyboardDidShowListener = Keyboard.addListener(
+  //     'keyboardDidShow',
+  //     () => {
+  //       scrollViewRef.current?.scrollToEnd({ animated: true });
+  //     }
+  //   );
 
-    return () => {
-      keyboardDidShowListener.remove();
-    };
-  }, []);
+  //   return () => {
+  //     keyboardDidShowListener.remove();
+  //   };
+  // }, []);
 
   if (isLoading) {
     return (
@@ -199,60 +171,62 @@ const Kanji: React.FC = () => {
   }
 
   return (
-    <KeyboardAvoidingView
-      className='flex-1 bg-secondary-background'
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView
-        ref={scrollViewRef}
-        className='bg-secondary-background'
-        style={{
-          paddingTop: insets.top,
-        }}>
-        {kanji && (
-          <View>
-            <View className='justify-center items-center w-full mt-1'>
-              <KanjiGu_ide size={120} word={kanji.text} />
-            </View>
-            <View className='w-full flex-col m-2'>
-              {kanjiAttributes.map((attr, index) => (
-                <View key={index} className='m-1 flex-row'>
-                  <View className='bg-primary-background rounded-md h-9'>
-                    <Text className='text-text-light ml-1 p-1 min-w-24 text-lg'>
-                      {attr.label}
-                    </Text>
-                  </View>
-                  <Text className='justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]'>
-                    {attr.value}
+    <ScrollView
+      className='bg-secondary-background'
+      style={{
+        paddingTop: insets.top,
+      }}>
+      {kanji && (
+        <View>
+          <View className='justify-center items-center w-full mt-1'>
+            <KanjiGu_ide size={120} word={kanji.text} />
+          </View>
+          <View className='w-full flex-col m-2'>
+            {kanjiAttributes.map((attr, index) => (
+              <View key={index} className='m-1 flex-row'>
+                <View className='bg-primary-background rounded-md h-9'>
+                  <Text className='text-text-light ml-1 p-1 min-w-24 text-lg'>
+                    {attr.label}
                   </Text>
                 </View>
-              ))}
-            </View>
-            <View className='mx-3 flex-row gap-2'>
-              <View className='h-full bg-primary w-1'></View>
-              <Text className='text-text'>Từ liên quan</Text>
-            </View>
-            {kanji.relatedWord && kanji.relatedWord.length > 0 ? (
-              kanji.relatedWord.map((word, index) => (
-                <View
-                  key={index}
-                  className='mx-3 my-2 p-2 bg-primary-background rounded-md'>
-                  <WordLinkItem {...word} />
-                </View>
-              ))
-            ) : (
-              <Text className='text-text text-center my-4'>
-                Không có từ liên quan
-              </Text>
-            )}
+                <Text className='justify-center ml-2 flex-row text-lg text-text py-1 w-[70%]'>
+                  {attr.value}
+                </Text>
+              </View>
+            ))}
           </View>
-        )}
-        <View className='mx-3 flex-row gap-2'>
-          <View className='h-full bg-primary w-1'></View>
-          <Text className='text-text'>Bình luận</Text>
+          <View className='mx-3 flex-row gap-2'>
+            <View className='h-full bg-primary w-1'></View>
+            <Text className='text-text'>Từ liên quan</Text>
+          </View>
+          {kanji.relatedWord && kanji.relatedWord.length > 0 ? (
+            kanji.relatedWord.map((word, index) => (
+              <View
+                key={index}
+                className='mx-3 my-2 p-2 bg-primary-background rounded-md'>
+                <WordLinkItem {...word} />
+              </View>
+            ))
+          ) : (
+            <Text className='text-text text-center my-4'>
+              Không có từ liên quan
+            </Text>
+          )}
         </View>
-        <ListCommentContainer comments={tempComments} isKanjiComment />
-      </ScrollView>
-    </KeyboardAvoidingView>
+      )}
+      <View className='mx-3 flex-row gap-2'>
+        <View className='h-full bg-primary w-1'></View>
+        <Text className='text-text'>Bình luận</Text>
+      </View>
+      <View className='my-2'>
+        <ListCommentContainer
+          initialComments={kanji?.comments || []}
+          isKanjiComment={true}
+          mainItemId={id}
+        />
+      </View>
+    </ScrollView>
+    // </KeyboardAvoidingView>
   );
 };
 

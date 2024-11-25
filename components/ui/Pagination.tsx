@@ -28,6 +28,8 @@ const Pagination: React.FC<PaginationProps> = ({
     [curPage, totalPages]
   );
 
+  if (totalPages <= 1) return <View></View>;
+
   return (
     <View className='flex-row justify-center items-center my-3'>
       {curPage > 1 && (
