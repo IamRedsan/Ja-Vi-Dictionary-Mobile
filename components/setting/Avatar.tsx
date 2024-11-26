@@ -38,6 +38,7 @@ const Avatar: React.FC<AvatarProps> = ({
           contentFit='cover'
           transition={1000}
           className='w-[30%] bg-[#0553] rounded-full aspect-square'
+          allowDownscaling={false}
         />
 
         {isPressable && (

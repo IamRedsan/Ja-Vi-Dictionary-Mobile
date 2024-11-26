@@ -26,6 +26,10 @@ const Password = () => {
   };
 
   const handleChangePassword = async () => {
+    if (values.password === '' || values.newPassword === '') {
+      return;
+    }
+
     if (values.newPassword !== values.reNewPassword) {
       Toast.show({
         type: 'info',
@@ -50,7 +54,7 @@ const Password = () => {
       });
     } catch (err) {
       const e = err as AxiosError;
-      const { message } = (e.response?.data as any)?.data;
+      const message = (e.response?.data as any)?.message;
 
       Toast.show({
         type: 'error',

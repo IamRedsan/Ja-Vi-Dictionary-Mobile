@@ -17,7 +17,7 @@ const ImagePickerModal = () => {
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
       allowsEditing: true,
       // aspect: [1, 1],
       quality: 1,
@@ -34,7 +34,7 @@ const ImagePickerModal = () => {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
       allowsEditing: true,
       // aspect: [1, 1],
       quality: 1,
