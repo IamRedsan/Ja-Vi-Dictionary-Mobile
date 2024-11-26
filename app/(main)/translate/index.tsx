@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button';
 import { socket } from '@/utils/socket';
 import { cssInterop } from 'nativewind';
 import { useEffect, useRef, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 cssInterop(SafeAreaView, {
@@ -110,6 +110,7 @@ const Translate = () => {
           text={source}
           onChangeText={(text) => setSource(text)}
           disabled={disabled}
+          language={sourceTargetPair[st].sourceLanguageCode}
         />
         <Button
           className='mx-4'
@@ -121,6 +122,7 @@ const Translate = () => {
           title={sourceTargetPair[st].target}
           text={target}
           loading={loading}
+          language={sourceTargetPair[st].targetLanguageCode}
         />
       </ScrollView>
       <ImagePickerModal />
@@ -134,12 +136,16 @@ const sourceTargetPair = {
   javi: {
     source: 'Tiếng Nhật',
     target: 'Tiếng Việt',
+    sourceLanguageCode: 'ja-JP' as 'ja-JP' | 'vi-VN',
+    targetLanguageCode: 'vi-VN' as 'ja-JP' | 'vi-VN',
     startToken: '</s>',
     endToken: '<unk>',
   },
   vija: {
     source: 'Tiếng Việt',
     target: 'Tiếng Nhật',
+    sourceLanguageCode: 'vi-VN' as 'ja-JP' | 'vi-VN',
+    targetLanguageCode: 'ja-JP' as 'ja-JP' | 'vi-VN',
     startToken: '[CLS]',
     endToken: '[SEP]',
   },

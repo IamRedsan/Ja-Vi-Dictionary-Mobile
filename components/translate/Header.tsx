@@ -26,11 +26,11 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <View className='flex-row justify-between items-center px-4 py-3 border-b-[0.5px] border-b-primary'>
-      <Text className='text-primary text-lg'>{source}</Text>
-      <TouchableOpacity onPress={onPress} disabled={disabled}>
+      <Text className='text-primary text-lg w-[30%]'>{source}</Text>
+      <TouchableOpacity onPress={onPress} disabled={disabled} className='px-6'>
         <AntDesign name='swap' className='text-primary text-[24px]' />
       </TouchableOpacity>
-      <Text className='text-primary text-lg'>{target}</Text>
+      <Text className='text-primary text-lg w-[30%] text-right'>{target}</Text>
     </View>
   );
 };

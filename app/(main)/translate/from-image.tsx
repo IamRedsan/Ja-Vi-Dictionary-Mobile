@@ -23,7 +23,7 @@ const FromImage = () => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
   const [result, setResult] = useState<
-    { text: string; translated_text: string }[]
+    { text: string; translated_text: string; number: number }[]
   >([]);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const FromImage = () => {
 
       try {
         const response = await aiClient.post(
-          '/translate/from-image',
+          '/translate/from-image-v2',
           formData,
           {
             headers: {
@@ -84,10 +84,16 @@ const FromImage = () => {
           contentFit='cover'
           transition={1000}
           placeholder={{ blurhash }}
+          allowDownscaling={false}
         />
         <View className='bg-primary-background'>
-          {result.map(({ text, translated_text }, index) => (
-            <Row key={index} source={text} target={translated_text} />
+          {result.map(({ text, translated_text, number }, index) => (
+            <Row
+              key={index}
+              source={text}
+              target={translated_text}
+              number={number}
+            />
           ))}
         </View>
       </View>
