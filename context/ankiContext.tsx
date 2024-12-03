@@ -1,6 +1,8 @@
 import { AnkiCard, createCard } from '@/utils/ankiUtils';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAppContext } from './appContext';
+import { useSQLiteContext } from 'expo-sqlite';
+import { getAllDecksInfo } from '@/constants/Query';
 
 export type Deck = {
   _id: string;
@@ -32,18 +34,10 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user } = useAppContext();
   const [state, setState] = useState<AnkiStateType>(initialState);
+  const db = useSQLiteContext();
 
   const getDecks = async () => {
-    const decks = [];
-    for (let i = 0; i < 5; ++i) {
-      decks.push({
-        _id: `${Math.floor(Math.random() * 1000000)}`,
-        name: `Deck ${i + 1}`,
-        new: Math.floor(Math.random() * 50),
-        learning: Math.floor(Math.random() * 30),
-        review: Math.floor(Math.random() * 100),
-      });
-    }
+    const decks: any = await db.getAllAsync(getAllDecksInfo);
     setState({ ...state, decks });
   };
 

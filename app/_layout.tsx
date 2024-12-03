@@ -5,8 +5,11 @@ import Toast from 'react-native-toast-message';
 import { EventProvider } from 'react-native-outside-press';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import AnkiProvider from '@/context/ankiContext';
+import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
+import { createTable, fakeData } from '@/constants/Query';
+import { View } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,27 +31,36 @@ const RootLayout: React.FC = () => {
   return (
     <>
       <AppProvider>
-        <AnkiProvider>
-          <EventProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}>
-              <Stack.Screen name='(main)' />
-              <Stack.Screen
-                name='(auth)'
-                options={{
-                  animationTypeForReplace: 'push',
-                  animation: 'slide_from_bottom',
-                }}
-              />
-            </Stack>
-          </EventProvider>
-        </AnkiProvider>
+        <Suspense fallback={<View />}>
+          <SQLiteProvider databaseName='anki.db' onInit={initDb} useSuspense>
+            <AnkiProvider>
+              <EventProvider>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                  }}>
+                  <Stack.Screen name='(main)' />
+                  <Stack.Screen
+                    name='(auth)'
+                    options={{
+                      animationTypeForReplace: 'push',
+                      animation: 'slide_from_bottom',
+                    }}
+                  />
+                </Stack>
+              </EventProvider>
+            </AnkiProvider>
+          </SQLiteProvider>
+        </Suspense>
       </AppProvider>
       <Toast />
     </>
   );
+};
+
+const initDb = async (db: SQLiteDatabase) => {
+  // await db.execAsync(createTable);
+  // await db.execAsync(fakeData);
 };
 
 export default RootLayout;

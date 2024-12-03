@@ -33,7 +33,7 @@ const SettingLayout: React.FC = () => {
           presentation: 'transparentModal',
           headerShown: false,
           headerBackground: undefined,
-          animation: 'fade_from_bottom',
+          animation: 'fade',
         }}
       />
     </Stack>

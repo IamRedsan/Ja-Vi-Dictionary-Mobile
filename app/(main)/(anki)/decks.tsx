@@ -2,6 +2,7 @@ import Table from '@/components/anki/deckTable/Table';
 import FloatAction from '@/components/anki/FloatAction';
 import { useAnkiContext } from '@/context/ankiContext';
 import { useAppContext } from '@/context/appContext';
+import { Image } from 'expo-image';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 const Decks = () => {
@@ -10,16 +11,16 @@ const Decks = () => {
 
   return (
     <SafeAreaView className='bg-primary-background flex-1'>
-      <View className='relative flex-1 px-4'>
-        <Text className='font-[UTM-Father] text-[40px] text-center mt-20 mb-20 text-text'>
+      <View className='relative flex-1 px-4 items-center'>
+        <Image
+          source={require('../../../assets/images/project-logo.png')}
+          className='bg-primary rounded-full size-32 my-6'
+        />
+        <Text className='text-[40px] text-center mb-8 text-text'>
           Thẻ ghi nhớ
         </Text>
         {!user ? (
           <Text>Vui lòng đăng nhập để sử dụng tính năng này</Text>
-        ) : decks.length === 0 ? (
-          <Text className='bg-anki-card py-10 border-[0.5px] border-black rounded-[10px] font-[UTM-Father] text-[22px] text-center text-text'>
-            Bạn chưa có bộ thẻ nào. Tạo ngay thôi!
-          </Text>
         ) : (
           <Table />
         )}

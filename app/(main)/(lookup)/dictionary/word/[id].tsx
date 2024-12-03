@@ -9,24 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-interface Kanji {
-  _id: string;
-  text: string;
-  phonetic: string[];
-  onyomi: string[];
-  kunyomi: string[];
-  strokes: number;
-  jlpt_level: number;
-  meaning: string;
-  composition: {
-    _id: string;
-    raw_text: string;
-    phonetic: string;
-  }[];
-}
+import { Kanji } from '../kanji/[id]';
 
 interface Comment {
   _id: string;

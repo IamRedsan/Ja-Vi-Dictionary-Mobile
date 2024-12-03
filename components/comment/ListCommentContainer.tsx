@@ -210,7 +210,6 @@ const ListCommentContainer: React.FC<ListCommentContainerProps> = ({
         avatar: currentUser!.avatar,
         fullname: currentUser!.fullname,
       };
-      console.warn(editedComment.content);
       const updatedComments = comments.map((comment) =>
         comment._id === _id ? { ...editedComment } : comment
       );
