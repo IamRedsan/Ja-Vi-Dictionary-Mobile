@@ -23,7 +23,7 @@ interface Comment {
   created_at: string;
 }
 
-interface Kanji {
+export interface Kanji {
   _id: string;
   text: string;
   phonetic: string[];

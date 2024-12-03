@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React from 'react';
 import {
   View,
@@ -7,6 +8,7 @@ import {
 } from 'react-native';
 
 interface RowProps {
+  _id: string;
   name: string;
   new: number;
   learning: number;
@@ -15,6 +17,7 @@ interface RowProps {
 }
 
 const Row: React.FC<RowProps & TouchableOpacityProps> = ({
+  _id,
   name,
   new: newNumber,
   learning,
@@ -22,14 +25,25 @@ const Row: React.FC<RowProps & TouchableOpacityProps> = ({
   active,
   ...rest
 }) => {
+  const handleLongPressRow = () => {
+    router.push({
+      pathname: '/deck-modal',
+      params: {
+        deckId: _id,
+      },
+    });
+  };
+
   return (
     <TouchableOpacity
+      onLongPress={handleLongPressRow}
       {...rest}
       className={`flex flex-row justify-between items-center px-4 py-1 rounded-[10px] ${
         active ? 'bg-anki-hightlight' : ''
       }`}>
       <Text
-        className={`flex-grow-[1] text-lg text-anki-text ${
+        numberOfLines={1}
+        className={`flex-grow-[1] text-lg text-anki-text flex-1 ${
           active ? 'text-anki-text-hightlight' : ''
         }`}>
         {name}

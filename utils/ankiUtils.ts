@@ -81,3 +81,5 @@ const timeFromNow = (futureDate: Date): string => {
   if (minutes > 0) return `${minutes} phút`;
   return `${seconds} giây`;
 };
+
+export const getDeckInfo = async () => {};
