@@ -30,6 +30,7 @@ const Row: React.FC<RowProps & TouchableOpacityProps> = ({
       pathname: '/deck-modal',
       params: {
         deckId: _id,
+        deckName: name,
       },
     });
   };

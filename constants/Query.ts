@@ -79,6 +79,11 @@ CREATE TABLE IF NOT EXISTS reviewLogs (
 );
 `;
 
+export const getDeckById = `
+  SELECT * FROM decks
+  WHERE _id = ?;
+`;
+
 export const createDeck = `
   INSERT INTO decks (_id, name, createdDate, updatedDate, newCardQuantity, action, localUpdatedDate) 
   VALUES (?, ?, ?, ?, ?, ?, ?);
@@ -98,4 +103,32 @@ INSERT OR REPLACE INTO reviewLogs (
 ) 
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+`;
+
+const getCardsLearningByDecId = `
+SELECT 
+    *
+FROM (
+    SELECT *
+    FROM cards
+    WHERE state IN (1, 2)
+      AND deckId = ?
+    
+    UNION ALL
+
+    SELECT *
+    FROM cards
+    WHERE state = 3
+      AND due = DATE('now')
+      AND deckId = ?
+    
+    UNION ALL
+
+    SELECT *
+    FROM cards
+    WHERE state = 0
+      AND deckId = ?
+    ORDER BY createdDate ASC
+    LIMIT ?
+) combined
 `;

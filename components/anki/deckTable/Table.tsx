@@ -17,7 +17,7 @@ const Table = () => {
     }
 
     router.push({
-      pathname: '/(main)/(anki)/review-cards',
+      pathname: '/(main)/(anki)/(card)/review-cards',
       params: { deckId },
     });
   };
@@ -30,7 +30,7 @@ const Table = () => {
           Bạn chưa có bộ thẻ nào. Tạo ngay thôi!
         </Text>
       ) : (
-        <ScrollView className='mt-2 gap-2 max-h-3/5'>
+        <ScrollView className='mt-2 gap-2 max-h-3/4'>
           {decks.map(({ name, new: newNumber, learning, review, _id }) => {
             return (
               <Row

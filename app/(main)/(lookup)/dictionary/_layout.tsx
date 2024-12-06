@@ -5,21 +5,17 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 const DictionaryLayout: React.FC = () => {
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      enableOnAndroid={true}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <S.Screen name='index' options={{ title: 'Danh sách hán tự' }} />
-        <S.Screen
-          name='kanji/[id]'
-          options={{ headerShown: false, headerBackground: undefined }}
-        />
-        <S.Screen
-          name='word/[id]'
-          options={{ headerShown: false, headerBackground: undefined }}
-        />
-      </Stack>
-    </KeyboardAwareScrollView>
+    <Stack screenOptions={{ headerShown: false }}>
+      <S.Screen name='index' options={{ title: 'Danh sách hán tự' }} />
+      <S.Screen
+        name='kanji/[id]'
+        options={{ headerShown: false, headerBackground: undefined }}
+      />
+      <S.Screen
+        name='word/[id]'
+        options={{ headerShown: false, headerBackground: undefined }}
+      />
+    </Stack>
   );
 };
 
