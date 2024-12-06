@@ -1,26 +1,69 @@
-import Button from '@/components/ui/Button';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import {
   View,
   Text,
-  TouchableOpacity,
   TouchableWithoutFeedback,
+  TouchableHighlight,
 } from 'react-native';
 const DeckModal = () => {
-  const { deckId } = useLocalSearchParams();
+  const { deckId, deckName } = useLocalSearchParams();
+  const { colorScheme } = useColorScheme();
   return (
     <TouchableWithoutFeedback
       onPress={() => {
         router.dismiss();
       }}>
-      <View className='flex-1 items-center justify-center bg-[rgba(0,0,0,0.54)]'>
+      <View className='flex-1 justify-center bg-[rgba(0,0,0,0.54)]'>
         <TouchableWithoutFeedback>
-          <View className='bg-tertiary-background p-10 rounded-[10px]'>
-            <Text className='text-center text-text mb-10 text-[16px]'>
-              Bạn có muốn đăng xuất
+          <View className='bg-tertiary-background rounded-[10px] max-h-2/3 w-fit flex-col mx-10'>
+            <Text className='text-primary text-2xl ml-4 mr-3 my-2'>
+              {deckName}
             </Text>
-            <View className='flex-row justify-center gap-4'>
-              <Text>{deckId}</Text>
+            <View className='flex-col'>
+              <TouchableHighlight
+                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
+                activeOpacity={0.6}
+                onPress={() => {
+                  router.replace('/(main)/(anki)/update-deck');
+                }}>
+                <View className='w-full py-4'>
+                  <Text className='text-text text-xl ml-2'>
+                    Chỉnh sửa bộ thẻ
+                  </Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
+                activeOpacity={0.6}
+                onPress={() => {
+                  router.push('/(main)/(anki)/delete-deck');
+                }}>
+                <View className='w-full py-4'>
+                  <Text className='text-text text-xl ml-2'>Xóa bộ thẻ</Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
+                activeOpacity={0.6}
+                onPress={() => {
+                  router.replace('/(main)/(anki)/(card)/create-card');
+                }}>
+                <View className='w-full py-4'>
+                  <Text className='text-text text-xl ml-2'>Thêm thẻ học</Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
+                className='rounded-b-[10px]'
+                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
+                activeOpacity={0.6}
+                onPress={() => {
+                  router.replace('/(main)/(anki)/(card)');
+                }}>
+                <View className='w-full py-4'>
+                  <Text className='text-text text-xl ml-2'>Tất cả thể học</Text>
+                </View>
+              </TouchableHighlight>
             </View>
           </View>
         </TouchableWithoutFeedback>

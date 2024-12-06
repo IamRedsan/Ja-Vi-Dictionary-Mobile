@@ -10,6 +10,7 @@ import ListCommentContainer from '@/components/comment/ListCommentContainer';
 import { client } from '@/client/axiosClient';
 import { HistoryEnum } from '@/constants/HistoryEnum';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface Comment {
   _id: string;
@@ -171,8 +172,10 @@ const Kanji: React.FC = () => {
   }
 
   return (
-    <ScrollView
-      className='bg-secondary-background'
+    <KeyboardAwareScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      enableOnAndroid={true}
+      className='bg-primary-background'
       style={{
         paddingTop: insets.top,
       }}>
@@ -225,7 +228,7 @@ const Kanji: React.FC = () => {
           mainItemId={id}
         />
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
     // </KeyboardAvoidingView>
   );
 };

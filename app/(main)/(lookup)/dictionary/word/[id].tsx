@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Kanji } from '../kanji/[id]';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface Comment {
   _id: string;
@@ -147,7 +148,9 @@ const Dictionary: React.FC = () => {
   }
 
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      enableOnAndroid={true}
       className='bg-primary-background'
       style={{
         paddingTop: insets.top,
@@ -224,7 +227,7 @@ const Dictionary: React.FC = () => {
           />
         </View>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 export default Dictionary;

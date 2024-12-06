@@ -59,7 +59,7 @@ const Search: React.FC = () => {
       setSearchTitle(text);
       id = setTimeout(() => {
         setSearchValue(text);
-      }, 500);
+      }, 250);
     };
   };
 

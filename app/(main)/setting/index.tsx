@@ -2,9 +2,10 @@ import Avatar from '@/components/setting/Avatar';
 import Settings from '@/components/setting/Settings';
 import Button from '@/components/ui/Button';
 import { useAppContext } from '@/context/appContext';
+import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { cssInterop } from 'nativewind';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 cssInterop(SafeAreaView, {
@@ -28,7 +29,14 @@ const Setting = () => {
             className='mb-10'
           />
         ) : (
-          <View className='h-[50%] justify-center items-center'>
+          <View className=' h-2/5 gap-10 justify-center items-center'>
+            <View className='items-center'>
+              <Image
+                source={require('../../../assets/images/project-logo.png')}
+                className='bg-primary rounded-full size-32'
+              />
+              <Text className='text-primary text-4xl font-bold mt-3'>Gaku</Text>
+            </View>
             <Link href='/login' asChild>
               <Button>Đăng nhập</Button>
             </Link>
