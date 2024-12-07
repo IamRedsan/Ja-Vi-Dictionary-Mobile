@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 interface RowProps {
-  _id: string;
+  id: number;
   name: string;
   new: number;
   learning: number;
@@ -17,11 +17,11 @@ interface RowProps {
 }
 
 const Row: React.FC<RowProps & TouchableOpacityProps> = ({
-  _id,
+  id,
   name,
-  new: newNumber,
-  learning,
-  review,
+  new: newNumber = 0,
+  learning = 0,
+  review = 0,
   active,
   ...rest
 }) => {
@@ -29,7 +29,7 @@ const Row: React.FC<RowProps & TouchableOpacityProps> = ({
     router.push({
       pathname: '/deck-modal',
       params: {
-        deckId: _id,
+        deckId: id,
         deckName: name,
       },
     });

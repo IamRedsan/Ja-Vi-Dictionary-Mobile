@@ -8,8 +8,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Suspense, useEffect } from 'react';
 import AnkiProvider from '@/context/ankiContext';
 import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
-import { createTable, fakeData } from '@/constants/Query';
 import { View } from 'react-native';
+import { createTable } from '@/constants/Query';
 
 SplashScreen.preventAutoHideAsync();
 

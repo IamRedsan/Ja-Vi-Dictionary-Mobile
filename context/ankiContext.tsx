@@ -2,14 +2,23 @@ import { AnkiCard, createCard } from '@/utils/ankiUtils';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAppContext } from './appContext';
 import { useSQLiteContext } from 'expo-sqlite';
-import { getAllDecksInfo } from '@/constants/Query';
+import {
+  deleteDeckById,
+  getAllDecksInfo,
+  createDeck as createDeckQuery,
+  updateDeck as updateDeckQuery,
+} from '@/constants/Query';
 
 export type Deck = {
-  _id: string;
+  id: number;
   name: string;
-  new: number;
-  learning: number;
-  review: number;
+  newCardQuantity: number;
+  createdDate: string;
+  updatedDate: string;
+  localUpdatedDate: string;
+  new?: number;
+  learning?: number;
+  review?: number;
 };
 
 export type AnkiStateType = {
@@ -20,6 +29,9 @@ export type AnkiStateType = {
 export type AnkiContextType = AnkiStateType & {
   getWindowingCards: (deckId: string) => Promise<void>;
   rateCard: (card: AnkiCard) => Promise<void>;
+  deleteDeck: (deckId: number) => Promise<void>;
+  createDeck: (deck: Omit<Deck, 'id'>) => Promise<void>;
+  updateDeck: (deck: Deck) => Promise<void>;
 };
 
 export const AnkiContext = createContext<AnkiContextType | null>(null);
@@ -39,6 +51,51 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
   const getDecks = async () => {
     const decks: any = await db.getAllAsync(getAllDecksInfo);
     setState({ ...state, decks });
+  };
+
+  const deleteDeck = async (deckId: number) => {
+    await db.runAsync(deleteDeckById, deckId);
+    setState((prevState) => ({
+      ...prevState,
+      decks: prevState.decks.filter((deck) => deck.id !== deckId),
+    }));
+  };
+
+  const createDeck = async (deck: Omit<Deck, 'id'>) => {
+    const newDecksArray = [
+      deck.name,
+      deck.createdDate,
+      deck.updatedDate,
+      deck.newCardQuantity,
+      0,
+      deck.localUpdatedDate,
+    ];
+    const result = await db.runAsync(createDeckQuery, newDecksArray);
+    const newDeck = { ...deck, id: result.lastInsertRowId };
+    setState((prevState) => ({
+      ...prevState,
+      decks: [...prevState.decks, newDeck],
+    }));
+  };
+
+  const updateDeck = async (deck: Deck) => {
+    const updatedDecksArray = [
+      deck.name,
+      deck.createdDate,
+      deck.updatedDate,
+      deck.newCardQuantity,
+      0,
+      deck.localUpdatedDate,
+      deck.id!,
+    ];
+    await db.runAsync(updateDeckQuery, updatedDecksArray);
+
+    setState((prevState) => ({
+      ...prevState,
+      decks: prevState.decks.map((item) =>
+        item.id === deck.id ? { ...item, ...deck } : item
+      ),
+    }));
   };
 
   const rateCard = async (card: AnkiCard) => {
@@ -83,7 +140,15 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [user]);
 
   return (
-    <AnkiContext.Provider value={{ ...state, getWindowingCards, rateCard }}>
+    <AnkiContext.Provider
+      value={{
+        ...state,
+        deleteDeck,
+        createDeck,
+        updateDeck,
+        getWindowingCards,
+        rateCard,
+      }}>
       {children}
     </AnkiContext.Provider>
   );

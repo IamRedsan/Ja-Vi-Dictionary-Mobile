@@ -25,7 +25,12 @@ const DeckModal = () => {
                 underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
                 activeOpacity={0.6}
                 onPress={() => {
-                  router.replace('/(main)/(anki)/update-deck');
+                  router.push({
+                    pathname: '/(main)/(anki)/update-deck',
+                    params: {
+                      deckId: deckId,
+                    },
+                  });
                 }}>
                 <View className='w-full py-4'>
                   <Text className='text-text text-xl ml-2'>
@@ -37,7 +42,12 @@ const DeckModal = () => {
                 underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
                 activeOpacity={0.6}
                 onPress={() => {
-                  router.push('/(main)/(anki)/delete-deck');
+                  router.push({
+                    pathname: '/(main)/(anki)/delete-deck',
+                    params: {
+                      deckId: deckId,
+                    },
+                  });
                 }}>
                 <View className='w-full py-4'>
                   <Text className='text-text text-xl ml-2'>Xóa bộ thẻ</Text>

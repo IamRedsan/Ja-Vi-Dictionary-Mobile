@@ -1,11 +1,16 @@
 import Button from '@/components/ui/Button';
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { useAnkiContext } from '@/context/ankiContext';
+import { router, useLocalSearchParams } from 'expo-router';
 import { View, Text, TouchableWithoutFeedback } from 'react-native';
 const Delete = () => {
-  const [loading, setLoading] = useState(false);
+  const params = useLocalSearchParams() as { deckId: string };
+  const deckId = params.deckId;
+  const { deleteDeck } = useAnkiContext();
 
-  const handleDeleteDeck = async (deckId: string) => {};
+  const handleDeleteDeck = async (deckId: string) => {
+    deleteDeck(parseInt(deckId, 10));
+    router.dismissAll();
+  };
 
   const handleCancel = () => {
     router.dismiss();
@@ -20,19 +25,15 @@ const Delete = () => {
               Bạn có muốn xóa bộ thẻ này ?
             </Text>
             <View className='flex-row justify-center gap-4'>
-              <Button
-                className='w-[100px]'
-                onPress={handleCancel}
-                disabled={loading}>
+              <Button className='w-[100px]' onPress={handleCancel}>
                 Huỷ
               </Button>
               <Button
                 className='w-[100px]'
                 type='dangerous'
                 onPress={() => {
-                  handleDeleteDeck('123');
-                }}
-                disabled={loading}>
+                  handleDeleteDeck(deckId);
+                }}>
                 Xóa bộ thẻ
               </Button>
             </View>

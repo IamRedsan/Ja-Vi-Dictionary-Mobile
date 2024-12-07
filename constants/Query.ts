@@ -19,14 +19,14 @@ VALUES
 
 export const getAllDecksInfo = `
 SELECT 
-    d._id,
+    d.id,
     d.name,
     CASE
-        WHEN d.newCardQuantity < (SELECT COUNT(*) FROM cards WHERE state = 0 AND deckId = d._id) THEN d.newCardQuantity
-        ELSE (SELECT COUNT(*) FROM cards WHERE state = 0 AND deckId = d._id)
+        WHEN d.newCardQuantity < (SELECT COUNT(*) FROM cards WHERE state = 0 AND deckId = d.id) THEN d.newCardQuantity
+        ELSE (SELECT COUNT(*) FROM cards WHERE state = 0 AND deckId = d.id)
     END AS new,
-    (SELECT COUNT(*) FROM cards WHERE state IN (1, 2) AND deckId = d._id) AS learning,
-    (SELECT COUNT(*) FROM cards WHERE state = 3 AND deckId = d._id) AS review
+    (SELECT COUNT(*) FROM cards WHERE state IN (1, 2) AND deckId = d.id) AS learning,
+    (SELECT COUNT(*) FROM cards WHERE state = 3 AND deckId = d.id) AS review
 FROM 
     decks d;
 
@@ -36,7 +36,7 @@ export const createTable = `
 DROP TABLE IF EXISTS decks;
 DROP TABLE IF EXISTS cards;
 CREATE TABLE IF NOT EXISTS decks (
-  _id TEXT PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
   createdDate TEXT NOT NULL,
   updatedDate TEXT NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS decks (
   newCardQuantity INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS cards (
-  _id TEXT PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY,
   createdDate TEXT NOT NULL,
   updatedDate TEXT NOT NULL,
   word TEXT NOT NULL,
@@ -79,14 +79,30 @@ CREATE TABLE IF NOT EXISTS reviewLogs (
 );
 `;
 
-export const getDeckById = `
-  SELECT * FROM decks
-  WHERE _id = ?;
+export const createDeck = `
+  INSERT INTO decks (name, createdDate, updatedDate, newCardQuantity, action, localUpdatedDate) 
+  VALUES (?, ?, ?, ?, ?, ?);
 `;
 
-export const createDeck = `
-  INSERT INTO decks (_id, name, createdDate, updatedDate, newCardQuantity, action, localUpdatedDate) 
-  VALUES (?, ?, ?, ?, ?, ?, ?);
+export const getDeckById = `
+  SELECT * FROM decks
+  WHERE id = ?
+`;
+
+export const deleteDeckById = `
+  DELETE FROM decks WHERE id = ?
+`;
+
+export const updateDeck = `
+  UPDATE decks
+  SET 
+    name = ?, 
+    createdDate = ?, 
+    updatedDate = ?, 
+    newCardQuantity = ?, 
+    action = ?, 
+    localUpdatedDate = ?
+  WHERE id = ?;
 `;
 
 const queryInsert = `
