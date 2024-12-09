@@ -20,8 +20,20 @@ const DeckLayout: React.FC = () => {
           animation: 'fade',
         }}
       />
-      <Stack.Screen name='update-deck' />
-      <Stack.Screen name='create-deck' />
+      <Stack.Screen
+        name='update-deck'
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+        }}
+      />
+      <Stack.Screen
+        name='create-deck'
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+        }}
+      />
     </Stack>
   );
 };

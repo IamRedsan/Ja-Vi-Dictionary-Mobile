@@ -107,7 +107,7 @@ const FloatAction = () => {
         ]}>
         <TouchableOpacity
           className='flex-row items-center gap-4'
-          onPress={() => router.push('/login')}>
+          onPress={() => router.push('/(main)/(anki)/create-deck')}>
           <Text className='text-text'>Tạo bộ thẻ</Text>
           <View className='w-[40px] h-[40px] justify-center items-center bg-primary rounded-full'>
             <FontAwesome name='plus' className='text-[24px] text-text-button' />

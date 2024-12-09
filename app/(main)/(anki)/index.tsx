@@ -1,6 +1,5 @@
 import Table from '@/components/anki/deckTable/Table';
 import FloatAction from '@/components/anki/FloatAction';
-import { useAnkiContext } from '@/context/ankiContext';
 import { useAppContext } from '@/context/appContext';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,7 +33,6 @@ cssInterop(Entypo, {
 
 const Decks = () => {
   const { user } = useAppContext();
-  const { decks } = useAnkiContext();
   const insets = useSafeAreaInsets();
   const [isConflict, setIsConflict] = useState<boolean>(true);
 
