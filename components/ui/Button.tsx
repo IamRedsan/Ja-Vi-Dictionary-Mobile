@@ -1,5 +1,10 @@
 import React, { forwardRef } from 'react';
-import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { cssInterop } from 'nativewind';
 
@@ -21,14 +26,14 @@ interface ButtonProps extends TouchableOpacityProps {
 
 const classNames = {
   round:
-    'disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-primary rounded-full p-2',
+    'disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-primary rounded-full p-2 shadow',
   primary:
-    'disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-primary rounded-lg p-2',
+    'disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-primary rounded-lg p-2 shadow',
   dangerous:
-    'disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-red-500 rounded-lg p-2',
+    'disabled:bg-gray-500 disabled:text-gray-200 flex-row items-center justify-center bg-red-500 rounded-lg p-2 shadow',
 };
 
-const Button = forwardRef<TouchableOpacity, ButtonProps>(
+const Button = forwardRef<View, ButtonProps>(
   ({ className, startIcon, endIcon, type, children, ...rest }, ref) => {
     return (
       <TouchableOpacity

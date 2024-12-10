@@ -57,7 +57,7 @@ const DeckModal = () => {
                 underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
                 activeOpacity={0.6}
                 onPress={() => {
-                  router.replace('/(main)/(anki)/(card)/create-card');
+                  router.replace({ pathname: '/(main)/(anki)/card' });
                 }}>
                 <View className='w-full py-4'>
                   <Text className='text-text text-xl ml-2'>Thêm thẻ học</Text>
@@ -68,7 +68,7 @@ const DeckModal = () => {
                 underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
                 activeOpacity={0.6}
                 onPress={() => {
-                  router.replace('/(main)/(anki)/(card)');
+                  router.replace('/(main)/(anki)/card/browse');
                 }}>
                 <View className='w-full py-4'>
                   <Text className='text-text text-xl ml-2'>Tất cả thể học</Text>

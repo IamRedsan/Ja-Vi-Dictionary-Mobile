@@ -5,7 +5,7 @@ const DeckLayout: React.FC = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name='index' />
-      <Stack.Screen name='(card)' />
+      <Stack.Screen name='card' options={{ animation: 'slide_from_right' }} />
       <Stack.Screen
         name='deck-modal'
         options={{

@@ -16,7 +16,7 @@ interface RowProps {
   active?: boolean;
 }
 
-const Row: React.FC<RowProps & TouchableOpacityProps> = ({
+const Row: React.FC<RowProps & Omit<TouchableOpacityProps, 'id'>> = ({
   id,
   name,
   new: newNumber = 0,

@@ -8,17 +8,32 @@ export interface WordType {
 }
 
 export interface AnkiCard extends Card, WordType {
-  _id?: string;
-  deckId: string;
+  id?: number;
+  deckId: number;
+  createdDate: Date;
+  updatedDate: Date;
+  localUpdatedDate: Date;
+}
+
+export enum Action {
+  CREATE = 0,
+  UPDATE = 1,
+  DELETE = 2,
+  NONE = 3,
 }
 
 export const f = fsrs();
 
-export const createCard = (deckId: string, wordType: WordType): AnkiCard => {
+export const createCard = (deckId: number, wordType: WordType): AnkiCard => {
+  const curDate = new Date();
+
   const card: AnkiCard = createEmptyCard(new Date(), (newCard) => ({
     ...newCard,
     ...wordType,
     deckId,
+    createdDate: curDate,
+    updatedDate: curDate,
+    localUpdatedDate: curDate,
   }));
 
   return card;
@@ -80,6 +95,17 @@ const timeFromNow = (futureDate: Date): string => {
   if (hours > 0) return `${hours} giờ`;
   if (minutes > 0) return `${minutes} phút`;
   return `${seconds} giây`;
+};
+
+export const mapCard: (card: any) => AnkiCard = (card: any) => {
+  return {
+    ...card,
+    createdDate: new Date(card.createdDate),
+    updatedDate: new Date(card.updatedDate),
+    localUpdatedDate: new Date(card.localUpdatedDate),
+    due: new Date(card.due),
+    last_review: card.last_review ? new Date(card.last_review) : null,
+  };
 };
 
 export const getDeckInfo = async () => {};

@@ -15,11 +15,19 @@ const AuthLayout: React.FC = () => {
     <Stack>
       <S.Screen
         name='login'
-        options={{ headerShown: false, headerBackground: undefined }}
+        options={{
+          headerShown: false,
+          headerBackground: undefined,
+          animation: 'none',
+        }}
       />
       <S.Screen
         name='register'
-        options={{ headerShown: false, headerBackground: undefined }}
+        options={{
+          headerShown: false,
+          headerBackground: undefined,
+          animation: 'none',
+        }}
       />
       <S.Screen name='verify' options={{ title: 'Xác thực tài khoản' }} />
     </Stack>
