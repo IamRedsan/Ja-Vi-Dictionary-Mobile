@@ -52,16 +52,16 @@ CREATE TABLE IF NOT EXISTS cards (
   sentence TEXT NOT NULL,
   reading TEXT NOT NULL,
   meaning TEXT NOT NULL,
-  difficulty INTEGER NOT NULL,
+  difficulty REAL NOT NULL,
   due TEXT NOT NULL,
   elapsed_days INTEGER NOT NULL,
   lapses INTEGER NOT NULL,
-  last_review TEXT NOT NULL,
+  last_review TEXT,
   reps INTEGER NOT NULL,
   scheduled_days INTEGER NOT NULL,
   stability REAL NOT NULL,
   state INTEGER NOT NULL,
-  deckId TEXT NOT NULL,
+  deckId INTEGER NOT NULL,
   localUpdatedDate TEXT NOT NULL,
   action INTERGER NOT NULL
 );
@@ -147,4 +147,70 @@ FROM (
     ORDER BY createdDate ASC
     LIMIT ?
 ) combined
+`;
+
+export const createCardQuery = `
+INSERT INTO cards (
+  createdDate,
+  updatedDate,
+  word,
+  sentence,
+  reading,
+  meaning,
+  difficulty,
+  due,
+  elapsed_days,
+  lapses,
+  last_review,
+  reps,
+  scheduled_days,
+  stability,
+  state,
+  deckId,
+  localUpdatedDate,
+  action
+) 
+VALUES (
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+);
+`;
+
+export const updateCardQuery = `
+UPDATE cards
+SET 
+  word = ?, 
+  sentence = ?, 
+  reading = ?, 
+  meaning = ?, 
+  difficulty = ?, 
+  due = ?, 
+  elapsed_days = ?, 
+  lapses = ?, 
+  last_review = ?, 
+  reps = ?, 
+  scheduled_days = ?, 
+  stability = ?, 
+  state = ?, 
+  deckId = ?, 
+  localUpdatedDate = ?, 
+  action = ?
+WHERE id = ?;
+`;
+
+export const getAllCardsByDeckIdAndSearchQuery = `
+SELECT * 
+FROM cards
+WHERE deckId = ?
+  AND (
+    word LIKE '%' || ? || '%' OR 
+    sentence LIKE '%' || ? || '%' OR 
+    reading LIKE '%' || ? || '%' OR 
+    meaning LIKE '%' || ? || '%'
+  );
+`;
+
+export const getCardByIdQuery = `
+SELECT * 
+FROM cards
+WHERE id = ?;
 `;
