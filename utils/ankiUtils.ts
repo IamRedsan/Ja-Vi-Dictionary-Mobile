@@ -1,4 +1,5 @@
-import { Card, createEmptyCard, fsrs, Rating } from 'ts-fsrs';
+import { Deck } from '@/context/ankiContext';
+import { Card, createEmptyCard, fsrs, Rating, ReviewLog } from 'ts-fsrs';
 
 export interface WordType {
   word: string;
@@ -45,30 +46,39 @@ export const getSchedulingCards = (
   [K in Exclude<keyof typeof Rating, 'Manual'>]: {
     timeFromNow: string;
     card: AnkiCard;
+    log: ReviewLog;
   };
 } => {
   const schedulingCards = f.repeat(card, new Date());
 
   const againCard = schedulingCards[Rating.Again].card as AnkiCard;
+  const againReviewLog = schedulingCards[Rating.Again].log;
   const hardCard = schedulingCards[Rating.Hard].card as AnkiCard;
+  const hardReviewLog = schedulingCards[Rating.Again].log;
   const goodCard = schedulingCards[Rating.Good].card as AnkiCard;
+  const goodReviewLog = schedulingCards[Rating.Again].log;
   const easyCard = schedulingCards[Rating.Easy].card as AnkiCard;
+  const easyReviewLog = schedulingCards[Rating.Again].log;
 
   return {
     Again: {
       card: againCard,
+      log: againReviewLog,
       timeFromNow: timeFromNow(againCard.due),
     },
     Hard: {
       card: hardCard,
+      log: hardReviewLog,
       timeFromNow: timeFromNow(hardCard.due),
     },
     Good: {
       card: goodCard,
+      log: goodReviewLog,
       timeFromNow: timeFromNow(goodCard.due),
     },
     Easy: {
       card: easyCard,
+      log: easyReviewLog,
       timeFromNow: timeFromNow(easyCard.due),
     },
   };
@@ -105,6 +115,15 @@ export const mapCard: (card: any) => AnkiCard = (card: any) => {
     localUpdatedDate: new Date(card.localUpdatedDate),
     due: new Date(card.due),
     last_review: card.last_review ? new Date(card.last_review) : null,
+  };
+};
+
+export const mapDeck: (deck: any) => Deck = (deck: any) => {
+  return {
+    ...deck,
+    createdDate: new Date(deck.createdDate),
+    updatedDate: new Date(deck.updatedDate),
+    localUpdatedDate: new Date(deck.localUpdatedDate),
   };
 };
 

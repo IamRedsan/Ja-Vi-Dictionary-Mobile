@@ -31,11 +31,10 @@ const UpdateDeck = () => {
 
   const handleUpdateDeck = async () => {
     if (deckName.trim() && numCards.trim()) {
-      const updatedDeck: Deck = {
+      const updatedDeck = {
         id: deck!.id,
-        createdDate: deck!.createdDate,
-        localUpdatedDate: new Date().toISOString(),
-        updatedDate: new Date().toISOString(),
+        localUpdatedDate: new Date(),
+        updatedDate: new Date(),
         name: deckName,
         newCardQuantity: parseInt(numCards, 10),
         learning: deck?.learning,

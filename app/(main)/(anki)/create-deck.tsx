@@ -1,8 +1,6 @@
-import { createDeck, getDeckById } from '@/constants/Query';
 import { Deck, useAnkiContext } from '@/context/ankiContext';
 import { useAppContext } from '@/context/appContext';
 import { router } from 'expo-router';
-import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -29,9 +27,9 @@ const CreateDeck = () => {
     if (deckName.trim() && numCards.trim()) {
       const newDeck: Omit<Deck, 'id'> = {
         name: deckName,
-        createdDate: new Date().toISOString(),
-        updatedDate: new Date().toISOString(),
-        localUpdatedDate: new Date().toISOString(),
+        createdDate: new Date(),
+        updatedDate: new Date(),
+        localUpdatedDate: new Date(),
         newCardQuantity: parseInt(numCards, 10),
         learning: 0,
         new: 0,

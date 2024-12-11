@@ -17,16 +17,16 @@ VALUES
 ('card6', '2024-03-02', '2024-03-21', '飲む', '水を飲みます。', 'のむ', 'To drink', 1, '2024-03-26', 5, 1, '2024-03-21', 9, 3, 0.65, 0, 'deck3', '2024-03-21', 1);
 `;
 
+//Label
 export const getAllDecksInfo = `
 SELECT 
-    d.id,
-    d.name,
+    *,
     CASE
         WHEN d.newCardQuantity < (SELECT COUNT(*) FROM cards WHERE state = 0 AND deckId = d.id) THEN d.newCardQuantity
         ELSE (SELECT COUNT(*) FROM cards WHERE state = 0 AND deckId = d.id)
     END AS new,
-    (SELECT COUNT(*) FROM cards WHERE state IN (1, 2) AND deckId = d.id) AS learning,
-    (SELECT COUNT(*) FROM cards WHERE state = 3 AND deckId = d.id) AS review
+    (SELECT COUNT(*) FROM cards WHERE state IN (1, 3) AND DATE(due) <= DATE('now')  AND deckId = d.id) AS learning,
+    (SELECT COUNT(*) FROM cards WHERE state = 2 AND DATE(due) <= DATE('now')  AND deckId = d.id) AS review
 FROM 
     decks d;
 
@@ -35,6 +35,7 @@ FROM
 export const createTable = `
 DROP TABLE IF EXISTS decks;
 DROP TABLE IF EXISTS cards;
+DROP TABLE IF EXISTS reviewLogs;
 CREATE TABLE IF NOT EXISTS decks (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
@@ -66,7 +67,7 @@ CREATE TABLE IF NOT EXISTS cards (
   action INTERGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS reviewLogs (
-  difficulty INTEGER NOT NULL,
+  difficulty REAL NOT NULL,
   due TEXT NOT NULL,
   elapsed_days INTEGER NOT NULL,
   last_elapsed_days INTEGER NOT NULL,
@@ -75,7 +76,9 @@ CREATE TABLE IF NOT EXISTS reviewLogs (
   scheduled_days INTEGER NOT NULL,
   stability REAL NOT NULL,
   state INTEGER NOT NULL,
-  action INTERGER NOT NULL
+  action INTEGER NOT NULL,
+  deckId INTEGER NOT NULL,
+  cardId INTEGER NOT NULL
 );
 `;
 
@@ -97,7 +100,6 @@ export const updateDeck = `
   UPDATE decks
   SET 
     name = ?, 
-    createdDate = ?, 
     updatedDate = ?, 
     newCardQuantity = ?, 
     action = ?, 
@@ -105,48 +107,36 @@ export const updateDeck = `
   WHERE id = ?;
 `;
 
-const queryInsert = `
-
-
-INSERT OR REPLACE INTO cards (
-  _id, createdDate, updatedDate, word, sentence, reading, meaning, difficulty, due, 
-  elapsed_days, lapses, last_review, reps, scheduled_days, stability, state
-) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-
-INSERT OR REPLACE INTO reviewLogs (
-  difficulty, due, elapsed_days, last_elapsed_days, rating, review, scheduled_days, stability, state
-) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-
-`;
-
-const getCardsLearningByDecId = `
+export const getCardsLearningByDeckIdQuery = `
 SELECT 
     *
 FROM (
+    -- Phần 1: Lấy các thẻ đang học (state = 0)
     SELECT *
-    FROM cards
-    WHERE state IN (1, 2)
-      AND deckId = ?
-    
+    FROM (
+        SELECT *
+        FROM cards
+        WHERE state = 0
+          AND deckId = ?
+        LIMIT ?
+    )
     UNION ALL
-
     SELECT *
-    FROM cards
-    WHERE state = 3
-      AND due = DATE('now')
-      AND deckId = ?
-    
-    UNION ALL
+    FROM (
+        SELECT *
+        FROM cards
+        WHERE state IN (1, 2, 3)
+          AND DATE(due) <= DATE('now')
+          AND deckId = ?
+        ORDER BY due ASC
+    )
+) combined;
+`;
 
-    SELECT *
-    FROM cards
-    WHERE state = 0
-      AND deckId = ?
-    ORDER BY createdDate ASC
-    LIMIT ?
-) combined
+export const getQuantityCardLearningByDeckIdToday = `
+  SELECT COUNT(*) AS learned_cards
+  FROM reviewLogs
+  WHERE DATE(review) = DATE('now') AND state = 0 AND deckId = ?;
 `;
 
 export const createCardQuery = `
@@ -213,4 +203,23 @@ export const getCardByIdQuery = `
 SELECT * 
 FROM cards
 WHERE id = ?;
+`;
+
+export const createReviewLogQuery = `
+  INSERT INTO reviewLogs (
+  difficulty, 
+  due, 
+  elapsed_days, 
+  last_elapsed_days, 
+  rating, 
+  review, 
+  scheduled_days, 
+  stability, 
+  state, 
+  action, 
+  deckId, 
+  cardId
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 `;

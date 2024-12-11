@@ -21,6 +21,14 @@ const CardLayout: React.FC = () => {
           animation: 'slide_from_right',
         }}
       />
+      <S.Screen
+        name='review-cards'
+        options={{
+          headerShown: false,
+          headerBackground: undefined,
+          animation: 'slide_from_right',
+        }}
+      />
     </Stack>
   );
 };

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Link } from 'expo-router';
+import { FuriText } from '@/components/word/FuriText';
 
 cssInterop(MaterialIcons, {
   className: {
@@ -96,11 +97,7 @@ const Decks = () => {
         </View>
       </View>
       <View className='relative flex-1 px-4 items-center mt-12'>
-        {!user ? (
-          <Text>Vui lòng đăng nhập để sử dụng tính năng này</Text>
-        ) : (
-          <Table />
-        )}
+        <Table />
         <FloatAction />
       </View>
     </View>

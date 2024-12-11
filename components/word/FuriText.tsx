@@ -7,6 +7,7 @@ interface FuriTextProps {
   reading?: string;
   furi?: string;
   showFuri?: boolean;
+  size?: 'small' | 'big';
 }
 
 export function FuriText({
@@ -14,19 +15,25 @@ export function FuriText({
   reading = '',
   furi = '',
   showFuri = true,
+  size = 'small',
 }: FuriTextProps) {
   const pairs = useFuriPairs(word, reading, furi);
-
   return (
     <View className='flex flex-row flex-wrap my-2'>
       {pairs.map(([furiText, text]: any, index: any) => (
         <View key={index} className='flex flex-col items-center justify-end'>
           {showFuri && (
-            <Text className='text-sm text-text-light opacity-90'>
+            <Text
+              className={`${
+                size === 'small' ? 'text-sm' : 'text-base'
+              } text-text-light opacity-90`}>
               {furiText}
             </Text>
           )}
-          <Text className='text-lg text-text'>{text}</Text>
+          <Text
+            className={`${size === 'small' ? 'text-lg' : 'text-xl'} text-text`}>
+            {text}
+          </Text>
         </View>
       ))}
     </View>

@@ -6,7 +6,7 @@ import { useAnkiContext } from '@/context/ankiContext';
 import { AnkiCard, WordType } from '@/utils/ankiUtils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, SafeAreaView } from 'react-native';
 
 const Card = () => {
   const {
@@ -97,7 +97,7 @@ const Card = () => {
   }, [id]);
 
   return (
-    <View className='relative flex-1 bg-primary-background'>
+    <SafeAreaView className='relative flex-1 bg-primary-background'>
       <CardHeader />
       <ScrollView>
         <DropdownWithLabel
@@ -140,7 +140,7 @@ const Card = () => {
         disabled={loading}>
         {id ? 'Cập nhật thẻ' : 'Tạo thẻ'}
       </Button>
-    </View>
+    </SafeAreaView>
   );
 };
 export default Card;

@@ -22,7 +22,7 @@ const DeckModal = () => {
             </Text>
             <View className='flex-col'>
               <TouchableHighlight
-                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
+                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#323232'}
                 activeOpacity={0.6}
                 onPress={() => {
                   router.push({
@@ -39,7 +39,7 @@ const DeckModal = () => {
                 </View>
               </TouchableHighlight>
               <TouchableHighlight
-                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
+                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#323232'}
                 activeOpacity={0.6}
                 onPress={() => {
                   router.push({
@@ -54,7 +54,7 @@ const DeckModal = () => {
                 </View>
               </TouchableHighlight>
               <TouchableHighlight
-                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
+                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#323232'}
                 activeOpacity={0.6}
                 onPress={() => {
                   router.replace({ pathname: '/(main)/(anki)/card' });
@@ -65,7 +65,7 @@ const DeckModal = () => {
               </TouchableHighlight>
               <TouchableHighlight
                 className='rounded-b-[10px]'
-                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#484848'}
+                underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#323232'}
                 activeOpacity={0.6}
                 onPress={() => {
                   router.replace('/(main)/(anki)/card/browse');
