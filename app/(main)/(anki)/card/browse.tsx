@@ -2,7 +2,7 @@ import CardBrowseHeader from '@/components/anki/CardBrowseHeader';
 import Table from '@/components/anki/cardTable/Table';
 import { useAnkiContext } from '@/context/ankiContext';
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 const CardBrowse = () => {
   const { getBrowseCards, browseSearch, curDeckId } = useAnkiContext();
 
@@ -13,12 +13,12 @@ const CardBrowse = () => {
   }, [browseSearch, curDeckId]);
 
   return (
-    <View className='bg-primary-background flex-1'>
+    <SafeAreaView className='bg-primary-background flex-1'>
       <CardBrowseHeader />
       <View className='p-2 flex-1'>
         <Table />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 export default CardBrowse;

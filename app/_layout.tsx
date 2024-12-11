@@ -59,7 +59,7 @@ const RootLayout: React.FC = () => {
 };
 
 const initDb = async (db: SQLiteDatabase) => {
-  await db.execAsync(createTable);
+  // await db.execAsync(createTable);
 };
 
 export default RootLayout;
