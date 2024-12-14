@@ -16,7 +16,7 @@ export default function CircleSpin() {
         { keypath: 'Shape Layer 2', color },
         { keypath: 'Shape Layer 1', color },
       ]}
-      style={{ height: '100%', width: '60%' }}
+      style={{ height: '100%', width: '60%', alignSelf: 'center' }}
     />
   );
 }

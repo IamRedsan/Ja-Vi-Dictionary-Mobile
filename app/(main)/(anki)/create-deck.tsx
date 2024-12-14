@@ -12,11 +12,9 @@ import {
 } from 'react-native';
 
 const CreateDeck = () => {
-  const { user } = useAppContext();
-  const { createDeck } = useAnkiContext();
+  const { createDeck, getDecks } = useAnkiContext();
   const [deckName, setDeckName] = useState('');
-  const [numCards, setNumCards] = useState('20'); // user.reviewCard
-  const nameInputRef = useRef<TextInput>(null);
+  const [numCards, setNumCards] = useState('20');
   const isFormValid = deckName.trim() !== '' && numCards.trim() !== '';
 
   const handleCancel = () => {
@@ -25,28 +23,11 @@ const CreateDeck = () => {
 
   const handleCreateDeck = async () => {
     if (deckName.trim() && numCards.trim()) {
-      const newDeck: Omit<Deck, 'id'> = {
-        name: deckName,
-        createdDate: new Date(),
-        updatedDate: new Date(),
-        localUpdatedDate: new Date(),
-        newCardQuantity: parseInt(numCards, 10),
-        learning: 0,
-        new: 0,
-        review: 0,
-      };
-      await createDeck(newDeck);
+      await createDeck(deckName, Number.parseInt(numCards));
+      await getDecks();
       router.dismiss();
     }
   };
-
-  useEffect(() => {
-    if (nameInputRef.current) {
-      setTimeout(() => {
-        nameInputRef.current!.focus();
-      }, 100);
-    }
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -57,10 +38,10 @@ const CreateDeck = () => {
           </Text>
           <Text className='text-text text-xl my-1'>Tên bộ thẻ:</Text>
           <TextInput
-            ref={nameInputRef}
             value={deckName}
             onChangeText={setDeckName}
             className='p-2 mb-2 border-2 border-[#CBD5E1] focus:border-primary rounded-lg text-text text-xl caret-primary'
+            autoFocus
           />
           <Text className='text-text text-xl my-1'>Số thẻ mới:</Text>
           <TextInput

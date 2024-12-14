@@ -7,9 +7,7 @@ const CardBrowse = () => {
   const { getBrowseCards, browseSearch, curDeckId } = useAnkiContext();
 
   useEffect(() => {
-    if (!curDeckId) return;
-
-    getBrowseCards(curDeckId, browseSearch);
+    getBrowseCards();
   }, [browseSearch, curDeckId]);
 
   return (

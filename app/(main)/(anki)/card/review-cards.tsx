@@ -1,13 +1,12 @@
 import { FuriText } from '@/components/word/FuriText';
-import { useAnkiContext } from '@/context/ankiContext';
-import { useAppContext } from '@/context/appContext';
+import { CardCounts, Deck, useAnkiContext } from '@/context/ankiContext';
 import { AnkiCard, getSchedulingCards } from '@/utils/ankiUtils';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router, useLocalSearchParams } from 'expo-router';
 import { cssInterop, useColorScheme } from 'nativewind';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -16,8 +15,8 @@ import {
   TouchableWithoutFeedback,
   TouchableHighlight,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Rating, ReviewLog } from 'ts-fsrs';
+import CircleSpin from '@/components/loading/CircleSpin';
 cssInterop(Entypo, {
   className: {
     target: 'style',
@@ -37,16 +36,18 @@ cssInterop(FontAwesome5, {
   } as any,
 });
 const ReviewCards = () => {
-  const { deckId, deckNewLearnQuantity } = useLocalSearchParams();
+  const { deckId }: { deckId: string } = useLocalSearchParams();
   const [loadingGetCards, setLoadingGetCards] = useState(true);
-  const { user } = useAppContext();
-  const { windowingCards, getWindowingCards, rateCard } = useAnkiContext();
-  const insets = useSafeAreaInsets();
-  const [isOptionsVisible, setIsOptionsVisible] = useState<boolean>(false);
+  const {
+    windowingCards,
+    getWindowingCards,
+    rateCard,
+    decks,
+    reloadWindowingCards,
+    setReloadWindowingCards,
+  } = useAnkiContext();
+  const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const { colorScheme } = useColorScheme();
-  const [learningData, setLearningData] = useState<[number, number, number]>([
-    0, 0, 0,
-  ]);
   const [schedulingCards, setSchedulingCards] = useState<
     | {
         [K in Exclude<keyof typeof Rating, 'Manual'>]: {
@@ -57,6 +58,11 @@ const ReviewCards = () => {
       }
     | null
   >(null);
+
+  const deck = useMemo(
+    () => decks.find(({ id }) => id === Number.parseInt(deckId)),
+    [decks, deckId]
+  );
 
   const currentCard = windowingCards.at(0);
 
@@ -69,55 +75,38 @@ const ReviewCards = () => {
     setSchedulingCards(schedulingCards);
   };
 
-  const handleRateCard = (rating: Exclude<keyof typeof Rating, 'Manual'>) => {
+  const handleRateCard = async (
+    rating: Exclude<keyof typeof Rating, 'Manual'>
+  ) => {
     if (!schedulingCards) {
       return;
     }
 
+    await rateCard(schedulingCards[rating].card, schedulingCards[rating].log);
     setSchedulingCards(null);
-    rateCard(schedulingCards[rating].card, schedulingCards[rating].log);
   };
 
   const handleBackCard = () => {};
 
   useEffect(() => {
-    if (typeof deckId !== 'string' || !user) {
-      return;
-    }
+    if (!reloadWindowingCards) return;
 
     const getWCs = async () => {
       setLoadingGetCards(true);
-      await getWindowingCards(
-        deckId,
-        parseInt(deckNewLearnQuantity as string, 10)
-      );
+      await getWindowingCards();
       setLoadingGetCards(false);
+      setReloadWindowingCards(false);
     };
 
     getWCs();
-  }, [deckId, user]);
+  }, [deck, reloadWindowingCards]);
 
   useEffect(() => {
-    if (typeof deckId !== 'string' || !user) {
-      return;
-    }
-    const newCards = windowingCards.filter((card) => card.state === 0).length;
-    const learningCards = windowingCards.filter(
-      (card) => card.state === 1 || card.state === 3
-    ).length;
-    const reviewCards = windowingCards.filter(
-      (card) => card.state === 2
-    ).length;
-    setLearningData([newCards, learningCards, reviewCards]);
-  }, [windowingCards]);
+    setReloadWindowingCards(true);
+  }, []);
 
   if (loadingGetCards) {
-    return (
-      <View>
-        <Text>loadingGetCards</Text>
-        <Text>{windowingCards.length}</Text>
-      </View>
-    );
+    return <CircleSpin />;
   }
 
   return (
@@ -126,11 +115,7 @@ const ReviewCards = () => {
         setIsOptionsVisible(false);
       }}>
       <View className='bg-primary-background flex-1'>
-        <View
-          className='bg-primary-foreground p-3'
-          style={{
-            paddingTop: insets.top,
-          }}>
+        <View className='bg-primary-foreground p-3'>
           <View className='flex-row items-center justify-between px-3'>
             <Text className='text-2xl text-center text-text'>Thẻ ghi nhớ</Text>
             <View className='flex-row gap-4'>
@@ -172,7 +157,7 @@ const ReviewCards = () => {
                 onPress={() => {
                   router.push({
                     pathname: '/(main)/(anki)/update-deck',
-                    params: { deckId: deckId },
+                    params: { deckId: deckId, fromPath: 'review-cards' },
                   });
                 }}
                 className='text-primary text-lg font-semibold underline'>
@@ -220,7 +205,7 @@ const ReviewCards = () => {
                 className={`text-lg text-[#93C5FD] text-right ${
                   currentCard.state === 0 ? 'underline' : ''
                 }`}>
-                {learningData[0]}
+                {deck?.new ?? 0}
               </Text>
               <Text
                 className={`text-lg text-[#F87171] text-right ${
@@ -228,13 +213,13 @@ const ReviewCards = () => {
                     ? 'underline'
                     : ''
                 }`}>
-                {learningData[1]}
+                {deck?.learning ?? 0}
               </Text>
               <Text
                 className={`text-lg text-[#22C55E] text-right ${
                   currentCard.state === 2 ? 'underline' : ''
                 }`}>
-                {learningData[2]}
+                {deck?.review ?? 0}
               </Text>
             </View>
             {schedulingCards ? (
@@ -309,8 +294,15 @@ const ReviewCards = () => {
               className='rounded-t-lg'
               underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#323232'}
               activeOpacity={0.6}
-              // Chinh sua the
-              onPress={() => {}}>
+              onPress={() => {
+                router.push({
+                  pathname: '/(main)/(anki)/card',
+                  params: {
+                    id: currentCard?.id,
+                    fromPath: 'review-cards',
+                  },
+                });
+              }}>
               <View className='py-3 px-4 flex-row gap-4 items-center'>
                 <FontAwesome5 name='pen' className='text-text text-lg' />
                 <Text className='text-text'>Chỉnh sửa thẻ</Text>
@@ -320,8 +312,15 @@ const ReviewCards = () => {
               className='rounded-b-lg'
               underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#323232'}
               activeOpacity={0.6}
-              // Xoa the
-              onPress={() => {}}>
+              onPress={() => {
+                router.push({
+                  pathname: '/(main)/(anki)/card/delete-card',
+                  params: {
+                    cardId: currentCard?.id,
+                    fromPath: 'review-cards',
+                  },
+                });
+              }}>
               <View className='py-3 px-4 flex-row gap-4 items-center'>
                 <FontAwesome5 name='trash' className='text-text text-lg' />
                 <Text className='text-text'>Xóa thẻ</Text>

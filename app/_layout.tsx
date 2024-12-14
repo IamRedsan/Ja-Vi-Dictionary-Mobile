@@ -9,7 +9,7 @@ import { Suspense, useEffect } from 'react';
 import AnkiProvider from '@/context/ankiContext';
 import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
 import { View } from 'react-native';
-import { createTable } from '@/constants/Query';
+import { createTablesQuery } from '@/constants/Query';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -59,7 +59,7 @@ const RootLayout: React.FC = () => {
 };
 
 const initDb = async (db: SQLiteDatabase) => {
-  // await db.execAsync(createTable);
+  await db.execAsync(createTablesQuery);
 };
 
 export default RootLayout;

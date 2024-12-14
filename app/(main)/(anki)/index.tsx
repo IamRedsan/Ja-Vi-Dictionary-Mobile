@@ -2,49 +2,43 @@ import Table from '@/components/anki/deckTable/Table';
 import FloatAction from '@/components/anki/FloatAction';
 import { useAppContext } from '@/context/appContext';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { cssInterop } from 'nativewind';
 import { useState } from 'react';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Link } from 'expo-router';
-import { FuriText } from '@/components/word/FuriText';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 cssInterop(MaterialIcons, {
   className: {
     target: 'style',
-    nativeStyleToProp: { height: true, width: true, size: true },
+    nativeStyleToProp: { size: true },
   } as any,
 });
 
 cssInterop(FontAwesome6, {
   className: {
     target: 'style',
-    nativeStyleToProp: { height: true, width: true, size: true },
+    nativeStyleToProp: { size: true },
   } as any,
 });
 
 cssInterop(Entypo, {
   className: {
     target: 'style',
-    nativeStyleToProp: { height: true, width: true, size: true },
+    nativeStyleToProp: { size: true },
   } as any,
 });
 
 const Decks = () => {
   const { user } = useAppContext();
-  const insets = useSafeAreaInsets();
   const [isConflict, setIsConflict] = useState<boolean>(true);
 
   if (!user) {
     return (
-      <View className='bg-primary-background flex-1'>
-        <View
-          className='bg-primary-foreground p-3'
-          style={{
-            paddingTop: insets.top,
-          }}>
+      <SafeAreaView className='bg-primary-background flex-1'>
+        <View className='bg-primary-foreground p-3'>
           <View className='flex-row items-center justify-between px-3'>
             <Text className='text-2xl text-center text-text'>Thẻ ghi nhớ</Text>
             <View className='flex-row gap-4 justify-center items-center'>
@@ -65,17 +59,13 @@ const Decks = () => {
             </Link>
           </Text>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className='bg-primary-background flex-1'>
-      <View
-        className='bg-primary-foreground p-3'
-        style={{
-          paddingTop: insets.top,
-        }}>
+    <SafeAreaView className='bg-primary-background flex-1'>
+      <View className='bg-primary-foreground p-3'>
         <View className='flex-row items-center justify-between px-3'>
           <Text className='text-2xl text-center text-text'>Thẻ ghi nhớ</Text>
           <View className='flex-row gap-4 justify-center items-center'>
@@ -100,7 +90,7 @@ const Decks = () => {
         <Table />
         <FloatAction />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 export default Decks;

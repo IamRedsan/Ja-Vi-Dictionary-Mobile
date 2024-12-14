@@ -25,7 +25,7 @@ const DeckModal = () => {
                 underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#323232'}
                 activeOpacity={0.6}
                 onPress={() => {
-                  router.push({
+                  router.replace({
                     pathname: '/(main)/(anki)/update-deck',
                     params: {
                       deckId: deckId,
@@ -42,7 +42,7 @@ const DeckModal = () => {
                 underlayColor={colorScheme === 'light' ? '#e1e1e1' : '#323232'}
                 activeOpacity={0.6}
                 onPress={() => {
-                  router.push({
+                  router.replace({
                     pathname: '/(main)/(anki)/delete-deck',
                     params: {
                       deckId: deckId,

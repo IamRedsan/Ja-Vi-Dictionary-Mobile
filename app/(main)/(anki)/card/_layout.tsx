@@ -29,6 +29,24 @@ const CardLayout: React.FC = () => {
           animation: 'slide_from_right',
         }}
       />
+      <S.Screen
+        name='delete-card'
+        options={{
+          headerShown: false,
+          headerBackground: undefined,
+          animation: 'fade',
+          presentation: 'transparentModal',
+        }}
+      />
+      <S.Screen
+        name='menu'
+        options={{
+          headerShown: false,
+          headerBackground: undefined,
+          animation: 'fade',
+          presentation: 'transparentModal',
+        }}
+      />
     </Stack>
   );
 };

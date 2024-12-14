@@ -1,225 +1,251 @@
-export const fakeData = `
-INSERT INTO decks (_id, name, createdDate, updatedDate, localUpdatedDate, action, newCardQuantity)
-VALUES
-('deck1', 'Basic Japanese Vocabulary', '2024-01-01', '2024-01-10', '2024-01-10', 1, 10),
-('deck2', 'Advanced Kanji', '2024-02-01', '2024-02-15', '2024-02-15', 1, 20),
-('deck3', 'JLPT N5 Grammar', '2024-03-01', '2024-03-20', '2024-03-20', 1, 15);
-INSERT INTO cards (
-  _id, createdDate, updatedDate, word, sentence, reading, meaning, difficulty, due, elapsed_days, lapses, 
-  last_review, reps, scheduled_days, stability, state, deckId, localUpdatedDate, action
-)
-VALUES
-('card1', '2024-01-01', '2024-01-10', '猫', '猫はかわいいです。', 'ねこ', 'Cat', 1, '2024-01-15', 5, 0, '2024-01-10', 10, 3, 0.85, 0, 'deck1', '2024-01-10', 1),
-('card2', '2024-01-02', '2024-01-11', '犬', '犬が走っています。', 'いぬ', 'Dog', 2, '2024-01-16', 6, 1, '2024-01-11', 12, 4, 0.80, 0, 'deck1', '2024-01-11', 1),
-('card3', '2024-02-01', '2024-02-15', '人間', '人間は考える動物です。', 'にんげん', 'Human', 3, '2024-02-20', 10, 0, '2024-02-15', 15, 5, 0.90, 1, 'deck2', '2024-02-15', 1),
-('card4', '2024-02-05', '2024-02-16', '電車', '電車に乗ります。', 'でんしゃ', 'Train', 2, '2024-02-21', 7, 2, '2024-02-16', 18, 6, 0.75, 1, 'deck2', '2024-02-16', 1),
-('card5', '2024-03-01', '2024-03-20', '食べる', 'りんごを食べます。', 'たべる', 'To eat', 1, '2024-03-25', 4, 0, '2024-03-20', 8, 2, 0.70, 0, 'deck3', '2024-03-20', 1),
-('card6', '2024-03-02', '2024-03-21', '飲む', '水を飲みます。', 'のむ', 'To drink', 1, '2024-03-26', 5, 1, '2024-03-21', 9, 3, 0.65, 0, 'deck3', '2024-03-21', 1);
+import { Action } from '@/utils/ankiUtils';
+import { State } from 'ts-fsrs';
+
+export const createTablesQuery = `
+  CREATE TABLE IF NOT EXISTS decks (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    newCardQuantity INTEGER NOT NULL,
+    createdDate TEXT NOT NULL,
+    updatedDate TEXT NOT NULL,
+    localUpdatedDate TEXT NOT NULL,
+    action INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS cards (
+    id INTEGER PRIMARY KEY,
+    word TEXT NOT NULL,
+    sentence TEXT NOT NULL,
+    reading TEXT NOT NULL,
+    meaning TEXT NOT NULL,
+    difficulty REAL NOT NULL,
+    due TEXT NOT NULL,
+    elapsed_days INTEGER NOT NULL,
+    lapses INTEGER NOT NULL,
+    last_review TEXT,
+    reps INTEGER NOT NULL,
+    scheduled_days INTEGER NOT NULL,
+    stability REAL NOT NULL,
+    state INTEGER NOT NULL,
+    deckId INTEGER NOT NULL,
+    createdDate TEXT NOT NULL,
+    updatedDate TEXT NOT NULL,
+    localUpdatedDate TEXT NOT NULL,
+    action INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS reviewLogs (
+    difficulty REAL NOT NULL,
+    due TEXT NOT NULL,
+    elapsed_days INTEGER NOT NULL,
+    last_elapsed_days INTEGER NOT NULL,
+    rating INTEGER NOT NULL,
+    review TEXT NOT NULL,
+    scheduled_days INTEGER NOT NULL,
+    stability REAL NOT NULL,
+    state INTEGER NOT NULL,
+    deckId INTEGER NOT NULL,
+    cardId INTEGER NOT NULL,
+    createdDate TEXT NOT NULL,
+    updatedDate TEXT NOT NULL,
+    localUpdatedDate TEXT NOT NULL,
+    action INTEGER NOT NULL
+  );
 `;
 
-//Label
-export const getAllDecksInfo = `
-SELECT 
-    *,
-    CASE
-        WHEN d.newCardQuantity < (SELECT COUNT(*) FROM cards WHERE state = 0 AND deckId = d.id) THEN d.newCardQuantity
-        ELSE (SELECT COUNT(*) FROM cards WHERE state = 0 AND deckId = d.id)
-    END AS new,
-    (SELECT COUNT(*) FROM cards WHERE state IN (1, 3) AND DATE(due) <= DATE('now')  AND deckId = d.id) AS learning,
-    (SELECT COUNT(*) FROM cards WHERE state = 2 AND DATE(due) <= DATE('now')  AND deckId = d.id) AS review
-FROM 
-    decks d;
-
-`;
-
-export const createTable = `
-DROP TABLE IF EXISTS decks;
-DROP TABLE IF EXISTS cards;
-DROP TABLE IF EXISTS reviewLogs;
-CREATE TABLE IF NOT EXISTS decks (
-  id INTEGER PRIMARY KEY,
-  name TEXT NOT NULL,
-  createdDate TEXT NOT NULL,
-  updatedDate TEXT NOT NULL,
-  localUpdatedDate TEXT NOT NULL,
-  action INTERGER NOT NULL,
-  newCardQuantity INTEGER NOT NULL
-);
-CREATE TABLE IF NOT EXISTS cards (
-  id INTEGER PRIMARY KEY,
-  createdDate TEXT NOT NULL,
-  updatedDate TEXT NOT NULL,
-  word TEXT NOT NULL,
-  sentence TEXT NOT NULL,
-  reading TEXT NOT NULL,
-  meaning TEXT NOT NULL,
-  difficulty REAL NOT NULL,
-  due TEXT NOT NULL,
-  elapsed_days INTEGER NOT NULL,
-  lapses INTEGER NOT NULL,
-  last_review TEXT,
-  reps INTEGER NOT NULL,
-  scheduled_days INTEGER NOT NULL,
-  stability REAL NOT NULL,
-  state INTEGER NOT NULL,
-  deckId INTEGER NOT NULL,
-  localUpdatedDate TEXT NOT NULL,
-  action INTERGER NOT NULL
-);
-CREATE TABLE IF NOT EXISTS reviewLogs (
-  difficulty REAL NOT NULL,
-  due TEXT NOT NULL,
-  elapsed_days INTEGER NOT NULL,
-  last_elapsed_days INTEGER NOT NULL,
-  rating INTEGER NOT NULL,
-  review TEXT NOT NULL,
-  scheduled_days INTEGER NOT NULL,
-  stability REAL NOT NULL,
-  state INTEGER NOT NULL,
-  action INTEGER NOT NULL,
-  deckId INTEGER NOT NULL,
-  cardId INTEGER NOT NULL
-);
-`;
-
-export const createDeck = `
-  INSERT INTO decks (name, createdDate, updatedDate, newCardQuantity, action, localUpdatedDate) 
-  VALUES (?, ?, ?, ?, ?, ?);
-`;
-
-export const getDeckById = `
+export const getDeckQuery = `
   SELECT * FROM decks
-  WHERE id = ?
+  WHERE id = ? AND action != ${Action.DELETE};
 `;
 
-export const deleteDeckById = `
-  DELETE FROM decks WHERE id = ?
+export const getDecksQuery = `
+  SELECT * FROM decks
+  WHERE action != ${Action.DELETE}
+  ORDER BY id ASC;
 `;
 
-export const updateDeck = `
+export const createDeckQuery = `
+  INSERT INTO decks (name, newCardQuantity, createdDate, updatedDate, localUpdatedDate, action)
+  VALUES (?, ?, ?, ?, ?, ${Action.CREATE});
+`;
+
+export const updateDeckQuery = `
   UPDATE decks
-  SET 
+  SET
     name = ?, 
-    updatedDate = ?, 
     newCardQuantity = ?, 
-    action = ?, 
+    localUpdatedDate = ?,
+    action = ${Action.UPDATE}
+  WHERE id = ?;
+`;
+
+export const deleteDeckQuery = `
+  UPDATE decks
+  SET
+    action = ${Action.DELETE},
     localUpdatedDate = ?
   WHERE id = ?;
 `;
 
-export const getCardsLearningByDeckIdQuery = `
-SELECT 
-    *
-FROM (
-    -- Phần 1: Lấy các thẻ đang học (state = 0)
-    SELECT *
-    FROM (
-        SELECT *
-        FROM cards
-        WHERE state = 0
-          AND deckId = ?
-        LIMIT ?
-    )
-    UNION ALL
-    SELECT *
-    FROM (
-        SELECT *
-        FROM cards
-        WHERE state IN (1, 2, 3)
-          AND DATE(due) <= DATE('now')
-          AND deckId = ?
-        ORDER BY due ASC
-    )
-) combined;
+export const getTodayCardCountsQuery = `
+  SELECT
+    deckId AS id,
+    SUM(CASE WHEN state = ${State.New} THEN 1 ELSE 0 END) AS new,
+    SUM(CASE WHEN state = ${State.Learning} OR state = ${State.Relearning} THEN 1 ELSE 0 END) AS learning,
+    SUM(CASE WHEN state = ${State.Review} THEN 1 ELSE 0 END) AS review
+  FROM cards
+  WHERE due < ? AND action != ${Action.DELETE}
+  GROUP BY deckId
+  ORDER BY deckId ASC;
 `;
 
-export const getQuantityCardLearningByDeckIdToday = `
-  SELECT COUNT(*) AS learned_cards
+export const getNewCardLearnedTodayCountsQuery = `
+  SELECT deckId AS id, COUNT(*) AS new
   FROM reviewLogs
-  WHERE DATE(review) = DATE('now') AND state = 0 AND deckId = ?;
+  WHERE ? <= review AND review < ? AND action != ${Action.DELETE} AND state = ${State.New}
+  GROUP BY deckId
+  ORDER BY deckId ASC;
+`;
+
+export const getCardsQuery = `
+  SELECT *
+  FROM cards
+  WHERE deckId = ? AND action != ${Action.DELETE}
+    AND (
+      word LIKE '%' || ? || '%' OR
+      sentence LIKE '%' || ? || '%' OR
+      reading LIKE '%' || ? || '%' OR
+      meaning LIKE '%' || ? || '%'
+    );
+`;
+
+export const getCardQuery = `
+  SELECT * 
+  FROM cards
+  WHERE id = ? AND action != ${Action.DELETE};
+`;
+
+export const getWindowingCardsQuery = `
+  SELECT * 
+  FROM (
+    SELECT *
+    FROM cards
+    WHERE deckId = ? AND state != ${State.New}
+      AND action != ${Action.DELETE}
+      AND due < ?
+
+    UNION ALL
+
+    SELECT *
+    FROM (
+      SELECT *
+      FROM cards
+      WHERE deckId = ? AND state = ${State.New}
+        AND action != ${Action.DELETE}
+        AND due < ?
+      LIMIT ?
+    )
+  )
+  ORDER BY due ASC;
 `;
 
 export const createCardQuery = `
-INSERT INTO cards (
-  createdDate,
-  updatedDate,
-  word,
-  sentence,
-  reading,
-  meaning,
-  difficulty,
-  due,
-  elapsed_days,
-  lapses,
-  last_review,
-  reps,
-  scheduled_days,
-  stability,
-  state,
-  deckId,
-  localUpdatedDate,
-  action
-) 
-VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-);
-`;
-
-export const updateCardQuery = `
-UPDATE cards
-SET 
-  word = ?, 
-  sentence = ?, 
-  reading = ?, 
-  meaning = ?, 
-  difficulty = ?, 
-  due = ?, 
-  elapsed_days = ?, 
-  lapses = ?, 
-  last_review = ?, 
-  reps = ?, 
-  scheduled_days = ?, 
-  stability = ?, 
-  state = ?, 
-  deckId = ?, 
-  localUpdatedDate = ?, 
-  action = ?
-WHERE id = ?;
-`;
-
-export const getAllCardsByDeckIdAndSearchQuery = `
-SELECT * 
-FROM cards
-WHERE deckId = ?
-  AND (
-    word LIKE '%' || ? || '%' OR 
-    sentence LIKE '%' || ? || '%' OR 
-    reading LIKE '%' || ? || '%' OR 
-    meaning LIKE '%' || ? || '%'
+  INSERT INTO cards (
+    word,
+    sentence,
+    reading,
+    meaning,
+    difficulty,
+    due,
+    elapsed_days,
+    lapses,
+    last_review,
+    reps,
+    scheduled_days,
+    stability,
+    state,
+    deckId,
+    createdDate,
+    updatedDate,
+    localUpdatedDate,
+    action
+  ) 
+  VALUES (
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${Action.CREATE}
   );
 `;
 
-export const getCardByIdQuery = `
-SELECT * 
-FROM cards
-WHERE id = ?;
+export const updateCardQuery = `
+  UPDATE cards
+  SET 
+    word = ?, 
+    sentence = ?, 
+    reading = ?, 
+    meaning = ?, 
+    difficulty = ?, 
+    due = ?, 
+    elapsed_days = ?, 
+    lapses = ?, 
+    last_review = ?, 
+    reps = ?, 
+    scheduled_days = ?, 
+    stability = ?, 
+    state = ?, 
+    deckId = ?, 
+    localUpdatedDate = ?, 
+    action = ${Action.UPDATE}
+  WHERE id = ?;
+`;
+
+export const deleteCardQuery = `
+  UPDATE cards
+  SET
+    action = ${Action.DELETE},
+    localUpdatedDate = ?
+  WHERE id = ?;
+`;
+
+export const deleteCardsByDeckIdQuery = `
+  UPDATE cards
+  SET
+    action = ${Action.DELETE},
+    localUpdatedDate = ?
+  WHERE deckId = ?;
 `;
 
 export const createReviewLogQuery = `
   INSERT INTO reviewLogs (
-  difficulty, 
-  due, 
-  elapsed_days, 
-  last_elapsed_days, 
-  rating, 
-  review, 
-  scheduled_days, 
-  stability, 
-  state, 
-  action, 
-  deckId, 
-  cardId
-) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  difficulty,
+  due,
+  elapsed_days,
+  last_elapsed_days,
+  rating,
+  review,
+  scheduled_days,
+  stability,
+  state,
+  deckId,
+  cardId,
+  createdDate,
+  updatedDate,
+  localUpdatedDate,
+  action
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${Action.CREATE});
+`;
 
+export const deleteReviewLogsByCardIdQuery = `
+  UPDATE reviewLogs
+  SET
+    action = ${Action.DELETE},
+    localUpdatedDate = ?
+  WHERE cardId = ?;
+`;
+
+export const deleteReviewLogsByDeckIdQuery = `
+  UPDATE reviewLogs
+  SET
+    action = ${Action.DELETE},
+    localUpdatedDate = ?
+  WHERE deckId = ?;
 `;
