@@ -9,11 +9,12 @@ export interface WordType {
 }
 
 export interface AnkiCard extends Card, WordType {
-  id?: number;
+  id: number;
   deckId: number;
   createdDate: Date;
   updatedDate: Date;
   localUpdatedDate: Date;
+  action: Action;
 }
 
 export enum Action {
@@ -21,6 +22,12 @@ export enum Action {
   UPDATE = 1,
   DELETE = 2,
   NONE = 3,
+}
+
+export interface AnkiReviewLog extends ReviewLog {
+  deckId: number;
+  cardId: number;
+  action: Action;
 }
 
 export const f = fsrs();
@@ -31,10 +38,12 @@ export const createCard = (deckId: number, wordType: WordType): AnkiCard => {
   const card: AnkiCard = createEmptyCard(new Date(), (newCard) => ({
     ...newCard,
     ...wordType,
+    id: -1,
     deckId,
     createdDate: curDate,
     updatedDate: curDate,
     localUpdatedDate: curDate,
+    action: Action.CREATE,
   }));
 
   return card;
@@ -54,11 +63,11 @@ export const getSchedulingCards = (
   const againCard = schedulingCards[Rating.Again].card as AnkiCard;
   const againReviewLog = schedulingCards[Rating.Again].log;
   const hardCard = schedulingCards[Rating.Hard].card as AnkiCard;
-  const hardReviewLog = schedulingCards[Rating.Again].log;
+  const hardReviewLog = schedulingCards[Rating.Hard].log;
   const goodCard = schedulingCards[Rating.Good].card as AnkiCard;
-  const goodReviewLog = schedulingCards[Rating.Again].log;
+  const goodReviewLog = schedulingCards[Rating.Good].log;
   const easyCard = schedulingCards[Rating.Easy].card as AnkiCard;
-  const easyReviewLog = schedulingCards[Rating.Again].log;
+  const easyReviewLog = schedulingCards[Rating.Easy].log;
 
   return {
     Again: {
@@ -127,4 +136,23 @@ export const mapDeck: (deck: any) => Deck = (deck: any) => {
   };
 };
 
-export const getDeckInfo = async () => {};
+export const mapReviewLog: (reviewLog: any) => ReviewLog = (reviewLog: any) => {
+  return {
+    ...reviewLog,
+    review: new Date(reviewLog.review),
+    due: new Date(reviewLog.due),
+  };
+};
+
+export const getBeNotGone = () => {
+  const now = new Date();
+  const nextMidnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    0,
+    0,
+    0
+  );
+  return nextMidnight.toISOString();
+};

@@ -2,6 +2,7 @@ import {
   Action,
   AnkiCard,
   createCard as createFsrsCard,
+  getBeNotGone,
   mapCard,
   mapDeck,
   WordType,
@@ -10,35 +11,46 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAppContext } from './appContext';
 import { useSQLiteContext } from 'expo-sqlite';
 import {
-  deleteDeckById,
-  getAllDecksInfo,
-  createDeck as createDeckQuery,
-  updateDeck as updateDeckQuery,
   createCardQuery,
-  getAllCardsByDeckIdAndSearchQuery,
-  getCardByIdQuery,
-  updateCardQuery,
-  getCardsLearningByDeckIdQuery,
-  getQuantityCardLearningByDeckIdToday,
+  createDeckQuery,
   createReviewLogQuery,
+  deleteCardQuery,
+  deleteCardsByDeckIdQuery,
+  deleteDeckQuery,
+  deleteReviewLogsByCardIdQuery,
+  deleteReviewLogsByDeckIdQuery,
+  getCardQuery,
+  getCardsQuery,
+  getDecksQuery,
+  getNewCardLearnedTodayCountsQuery,
+  getTodayCardCountsQuery,
+  getWindowingCardsQuery,
+  updateCardQuery,
+  updateDeckQuery,
 } from '@/constants/Query';
 import { ReviewLog, State } from 'ts-fsrs';
 
-export type Deck = {
+export interface Deck {
   id: number;
   name: string;
   newCardQuantity: number;
   createdDate: Date;
   updatedDate: Date;
   localUpdatedDate: Date;
+  action: Action;
+}
+
+export interface CardCounts {
+  id: number;
   new: number;
   learning: number;
   review: number;
-};
+}
 
 export type AnkiStateType = {
-  decks: Deck[];
+  decks: (Deck & CardCounts)[];
   windowingCards: AnkiCard[];
+  reloadWindowingCards: boolean;
   curDeckId?: number;
   browseCards: AnkiCard[];
   browseSearch: string;
@@ -46,20 +58,25 @@ export type AnkiStateType = {
 };
 
 export type AnkiContextType = AnkiStateType & {
-  getWindowingCards: (
-    deckId: string,
-    deckNewLearnQuantity: number
-  ) => Promise<void>;
-  rateCard: (card: AnkiCard, reviewLog: ReviewLog) => Promise<void>;
+  getDecks: () => Promise<void>;
   deleteDeck: (deckId: number) => Promise<void>;
-  createDeck: (deck: Omit<Deck, 'id'>) => Promise<void>;
-  updateDeck: (deck: any) => Promise<void>;
-  createCard: (deckId: number, data: WordType) => Promise<AnkiCard>;
+  createDeck: (name: string, newCardQuantity: number) => Promise<void>;
+  updateDeck: (deck: Deck) => Promise<void>;
+  rateCard: (card: AnkiCard, reviewLog: ReviewLog) => Promise<void>;
+  getWindowingCards: () => Promise<void>;
+  setReloadWindowingCards: (value: boolean) => void;
+  createCard: (deckId: number, data: WordType) => Promise<void>;
   updateCard: (card: AnkiCard) => Promise<void>;
-  getBrowseCards: (deckId: number, search: string) => Promise<void>;
-  getCardById: (id: number) => Promise<AnkiCard | null>;
-  setCurDeckId: (deckId: number) => void;
+  deleteCard: (cardId: number) => Promise<void>;
+  getBrowseCards: () => Promise<void>;
   setBrowseSearch: (search: string) => void;
+  setCurDeckId: (deckId: number) => void;
+  getCardById: (id: number) => Promise<AnkiCard | null>;
+  createReviewLog: (
+    reviewLog: ReviewLog,
+    deckId: number,
+    cardId: number
+  ) => Promise<void>;
 };
 
 export const AnkiContext = createContext<AnkiContextType | null>(null);
@@ -67,6 +84,7 @@ export const AnkiContext = createContext<AnkiContextType | null>(null);
 const initialState: AnkiStateType = {
   decks: [],
   windowingCards: [],
+  reloadWindowingCards: false,
   browseCards: [],
   browseSearch: '',
   browseLoading: false,
@@ -80,67 +98,88 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
   const db = useSQLiteContext();
 
   const getDecks = async () => {
-    try {
-      const decks: any[] = await db.getAllAsync(getAllDecksInfo);
+    const beNotGone = getBeNotGone();
+    const oneDayBefore = new Date(
+      new Date(beNotGone).getTime() - 24 * 60 * 60 * 1000
+    ).toISOString();
 
-      // Chờ tất cả các Promise hoàn tất trước khi cập nhật state
-      const updatedDecks = await Promise.all(
-        decks.map(async (deck) => {
-          const learnedCards = await getNewCardLearnedToday(deck.id);
-          return { ...deck, new: deck.new - learnedCards };
-        })
-      );
-      setState({
-        ...state,
-        decks: updatedDecks.map(mapDeck),
-      });
-    } catch (error) {
-      console.error('Lỗi khi lấy danh sách các bộ bài:', error);
-    }
+    const decks = (await db.getAllAsync(getDecksQuery)).map(mapDeck);
+    const todayCardCounts: CardCounts[] = await db.getAllAsync(
+      getTodayCardCountsQuery,
+      [beNotGone]
+    );
+    const newCardLearnedTodayCounts: { id: number; new: number }[] =
+      await db.getAllAsync(getNewCardLearnedTodayCountsQuery, [
+        oneDayBefore,
+        beNotGone,
+      ]);
+
+    setState((prev) => ({
+      ...prev,
+      decks: decks.map((deck) => {
+        const todayCardCount = todayCardCounts.find(
+          ({ id }) => id === deck.id
+        ) ?? {
+          id: deck.id,
+          learning: 0,
+          new: 0,
+          review: 0,
+        };
+        const newCardLearnedTodayCount = newCardLearnedTodayCounts.find(
+          ({ id }) => id === deck.id
+        ) ?? { id: deck.id, new: 0 };
+
+        if (
+          todayCardCount.new + newCardLearnedTodayCount.new >=
+          deck.newCardQuantity
+        ) {
+          const residualNewCardCount =
+            todayCardCount.new +
+            newCardLearnedTodayCount.new -
+            deck.newCardQuantity;
+          todayCardCount.new -= residualNewCardCount;
+        }
+
+        return { ...deck, ...todayCardCount };
+      }),
+    }));
   };
 
   const deleteDeck = async (deckId: number) => {
-    await db.runAsync(deleteDeckById, deckId);
-    setState((prevState) => ({
-      ...prevState,
-      decks: prevState.decks.filter((deck) => deck.id !== deckId),
-    }));
+    const curDate = new Date().toISOString();
+
+    await db.runAsync(deleteDeckQuery, [curDate, deckId]);
+    await db.runAsync(deleteCardsByDeckIdQuery, [curDate, deckId]);
+    await db.runAsync(deleteReviewLogsByDeckIdQuery, [curDate, deckId]);
   };
 
-  const createDeck = async (deck: Omit<Deck, 'id'>) => {
-    const newDecksArray = [
-      deck.name,
-      deck.createdDate.toISOString(),
-      deck.updatedDate.toISOString(),
-      deck.newCardQuantity,
-      Action.CREATE,
-      deck.localUpdatedDate.toISOString(),
-    ];
-    const result = await db.runAsync(createDeckQuery, newDecksArray);
-    const newDeck = { ...deck, id: result.lastInsertRowId };
-    setState((prevState) => ({
-      ...prevState,
-      decks: [...prevState.decks, newDeck],
-    }));
+  const createDeck = async (name: string, newCardQuantity: number) => {
+    const curDate = new Date().toISOString();
+    await db.runAsync(createDeckQuery, [
+      name,
+      newCardQuantity,
+      curDate,
+      curDate,
+      curDate,
+    ]);
   };
 
   const updateDeck = async (deck: Deck) => {
-    const updatedDecksArray = [
+    const curDate = new Date().toISOString();
+    await db.runAsync(updateDeckQuery, [
       deck.name,
-      deck.updatedDate.toISOString(),
       deck.newCardQuantity,
-      Action.UPDATE,
-      deck.localUpdatedDate.toISOString(),
-      deck.id!,
-    ];
-    await db.runAsync(updateDeckQuery, updatedDecksArray);
-    getDecks();
+      curDate,
+      deck.id,
+    ]);
   };
 
   const rateCard = async (card: AnkiCard, reviewLog: ReviewLog) => {
-    setState(({ windowingCards, ...rest }) => {
-      const now = new Date();
-      now.setHours(23, 59, 59, 999);
+    await updateCard(card);
+    await createReviewLog(reviewLog, card.deckId, card.id);
+
+    setState(({ windowingCards, decks, ...rest }) => {
+      const beNotGone = new Date(getBeNotGone());
 
       const updatedCards: AnkiCard[] = [];
       let inserted = false;
@@ -150,7 +189,7 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
           continue;
         }
 
-        if (!inserted && card.due < now && card.due < existingCard.due) {
+        if (!inserted && card.due <= beNotGone && card.due < existingCard.due) {
           updatedCards.push(card);
           inserted = true;
         }
@@ -158,87 +197,77 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
         updatedCards.push(existingCard);
       }
 
-      if (!inserted && card.due < now) {
+      if (!inserted && card.due <= beNotGone) {
         updatedCards.push(card);
+        inserted = true;
       }
-      let counts: {
-        new: number;
-        learning: number;
-        review: number;
-      } | null;
-      if (inserted) {
-        const decks = state.decks.find(({ id }) => id === state.curDeckId);
 
-        counts = {
-          new: decks?.new ?? 0,
-          learning: decks?.learning ?? 0,
-          review: decks?.review ?? 0,
-        };
-        switch (reviewLog.state) {
-          case State.New:
-            counts.new--;
-          case State.Review:
-            counts.review--;
-          default:
-            counts.learning--;
-        }
+      const deck = decks.find(({ id }) => id === card.deckId);
+
+      const cardCounts: CardCounts = {
+        id: deck?.id ?? -1,
+        learning: deck?.learning ?? 0,
+        new: deck?.new ?? 0,
+        review: deck?.review ?? 0,
+      };
+
+      switch (reviewLog.state) {
+        case State.New:
+          --cardCounts.new;
+          break;
+        case State.Review:
+          --cardCounts.review;
+          break;
+        default:
+          --cardCounts.learning;
+      }
+
+      if (inserted) {
         switch (card.state) {
           case State.New:
-            counts.new++;
+            ++cardCounts.new;
+            break;
           case State.Review:
-            counts.review++;
+            ++cardCounts.review;
+            break;
           default:
-            counts.learning++;
+            ++cardCounts.learning;
         }
       }
-      updateCard(card);
-      createReviewLog(reviewLog, card.deckId, card.id!);
-      setState({
-        ...state,
-        decks: state.decks.map((deck) => {
-          // if (deck.id === state.curDeckId && counts) {
-          //   return { ...deck, ...counts };
-          // } else {
-          //   return deck;
-          // }
-          return { ...deck, new: 0 };
-        }),
-      });
+
       return {
         ...rest,
         windowingCards: updatedCards,
+        decks: decks.map((deck) => {
+          if (deck.id === cardCounts.id) {
+            return { ...deck, ...cardCounts };
+          } else return deck;
+        }),
       };
     });
   };
 
-  const getWindowingCards = async (
-    deckId: string,
-    deckNewLearnQuantity: number
-  ) => {
-    const todayLearningCard = await getNewCardLearnedToday(
-      parseInt(deckId, 10)
-    );
-    let todayLearningCardLeft: number;
-    if (todayLearningCard) {
-      todayLearningCardLeft = deckNewLearnQuantity - todayLearningCard;
-    } else {
-      todayLearningCardLeft = deckNewLearnQuantity;
-    }
-    const windowingCards: AnkiCard[] = await db.getAllAsync(
-      getCardsLearningByDeckIdQuery,
-      [parseInt(deckId, 10), todayLearningCardLeft, parseInt(deckId, 10)]
-    );
+  const getWindowingCards = async () => {
+    const deck = state.decks.find(({ id }) => id === state.curDeckId);
+    if (!deck) return;
 
-    setState({ ...state, windowingCards: windowingCards.map(mapCard) });
+    const beNotGone = getBeNotGone();
+
+    const cards = await db.getAllAsync(getWindowingCardsQuery, [
+      deck.id,
+      beNotGone,
+      deck.id,
+      beNotGone,
+      deck.new,
+    ]);
+
+    setState((prev) => ({ ...prev, windowingCards: cards.map(mapCard) }));
   };
 
   const createCard = async (deckId: number, data: WordType) => {
     const card = createFsrsCard(deckId, data);
 
-    const curDate = new Date().toISOString();
-    const result = await db.runAsync(createCardQuery, [
-      curDate,
-      curDate,
+    await db.runAsync(createCardQuery, [
       card.word,
       card.sentence,
       card.reading,
@@ -253,22 +282,17 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
       card.stability,
       card.state,
       card.deckId,
-      curDate,
-      Action.CREATE,
+      card.createdDate.toISOString(),
+      card.updatedDate.toISOString(),
+      card.localUpdatedDate.toISOString(),
+      card.action,
     ]);
-
-    card.id = result.lastInsertRowId;
-
-    await getDecks();
-
-    return card;
   };
 
   const updateCard = async (card: AnkiCard) => {
-    if (!card.id) throw Error();
-
     const curDate = new Date().toISOString();
     const lastReview = card.last_review ? card.last_review.toISOString() : null;
+
     await db.runAsync(updateCardQuery, [
       card.word,
       card.sentence,
@@ -285,18 +309,28 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
       card.state,
       card.deckId,
       curDate,
-      Action.UPDATE,
       card.id,
     ]);
   };
 
-  const getBrowseCards = async (deckId: number, search: string) => {
+  const deleteCard = async (cardId: number) => {
+    const curDate = new Date().toISOString();
+    await db.runAsync(deleteCardQuery, [curDate, cardId]);
+    await db.runAsync(deleteReviewLogsByCardIdQuery, [curDate, cardId]);
+  };
+
+  const getBrowseCards = async () => {
+    if (!state.curDeckId) return;
+
     setState((prev) => ({ ...prev, browseLoading: true }));
 
-    const cards: any[] = await db.getAllAsync(
-      getAllCardsByDeckIdAndSearchQuery,
-      [deckId, search, search, search, search]
-    );
+    const cards: any[] = await db.getAllAsync(getCardsQuery, [
+      state.curDeckId,
+      state.browseSearch,
+      state.browseSearch,
+      state.browseSearch,
+      state.browseSearch,
+    ]);
 
     setState((prev) => ({
       ...prev,
@@ -314,17 +348,11 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getCardById = async (id: number) => {
-    const card: any = await db.getFirstAsync(getCardByIdQuery, [id]);
+    const card: any = await db.getFirstAsync(getCardQuery, [id]);
 
     if (!card) return null;
 
     return mapCard(card);
-  };
-
-  const getNewCardLearnedToday = async (deckId: number) => {
-    const todayLearnedCard: { learned_cards: number } | null =
-      await db.getFirstAsync(getQuantityCardLearningByDeckIdToday, [deckId]);
-    return todayLearnedCard?.learned_cards ?? 0;
   };
 
   const createReviewLog = async (
@@ -332,6 +360,8 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
     deckId: number,
     cardId: number
   ) => {
+    const curDate = new Date().toISOString();
+
     await db.runAsync(createReviewLogQuery, [
       reviewLog.difficulty,
       reviewLog.due.toISOString(),
@@ -342,33 +372,61 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
       reviewLog.scheduled_days,
       reviewLog.stability,
       reviewLog.state,
-      Action.CREATE,
       deckId,
       cardId,
+      curDate,
+      curDate,
+      curDate,
     ]);
+  };
+
+  const setReloadWindowingCards = (value: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      reloadWindowingCards: value,
+    }));
   };
 
   useEffect(() => {
     if (user) {
       getDecks();
     }
-  }, [user, state.decks]);
+  }, [user]);
+
+  useEffect(() => {
+    const now = new Date();
+    const notBeGone = new Date(getBeNotGone());
+    const delay = notBeGone.getTime() - now.getTime();
+
+    const timeoutId = setTimeout(async () => {
+      await getDecks();
+      setReloadWindowingCards(true);
+    }, delay);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   return (
     <AnkiContext.Provider
       value={{
         ...state,
+        getDecks,
         deleteDeck,
         createDeck,
         updateDeck,
-        getWindowingCards,
         rateCard,
+        getWindowingCards,
+        setReloadWindowingCards,
         createCard,
-        getBrowseCards,
         updateCard,
-        getCardById,
-        setCurDeckId,
+        deleteCard,
+        getBrowseCards,
         setBrowseSearch,
+        setCurDeckId,
+        getCardById,
+        createReviewLog,
       }}>
       {children}
     </AnkiContext.Provider>

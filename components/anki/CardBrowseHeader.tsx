@@ -71,7 +71,12 @@ const CardBrowseHeader = () => {
             value={String(curDeckId)}
             disabled={browseLoading}
           />
-          <Link href='/(main)/(anki)/card' asChild>
+          <Link
+            href={{
+              pathname: '/(main)/(anki)/card',
+              params: { fromPath: 'browse' },
+            }}
+            asChild>
             <AntDesignIconButton iconName='plus' disabled={browseLoading} />
           </Link>
         </>

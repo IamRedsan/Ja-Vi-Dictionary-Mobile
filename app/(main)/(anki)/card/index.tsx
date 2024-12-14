@@ -6,7 +6,7 @@ import { useAnkiContext } from '@/context/ankiContext';
 import { AnkiCard, WordType } from '@/utils/ankiUtils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { View, ScrollView, SafeAreaView } from 'react-native';
+import { ScrollView, SafeAreaView } from 'react-native';
 
 const Card = () => {
   const {
@@ -17,12 +17,14 @@ const Card = () => {
     curDeckId,
     setCurDeckId,
     getBrowseCards,
-    browseSearch,
+    getDecks,
+    setReloadWindowingCards,
   } = useAnkiContext();
   const mappedDecks = useMemo(() => {
     return decks.map(({ id, name }) => ({ value: String(id), label: name }));
   }, [decks]);
-  const { id }: { id: string } = useLocalSearchParams();
+  const { id, fromPath }: { id: string; fromPath: string } =
+    useLocalSearchParams();
   const [card, setCard] = useState<AnkiCard | null>();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -55,15 +57,21 @@ const Card = () => {
       setLoading(false);
 
       if (router.canGoBack()) {
-        getBrowseCards(curDeckId, browseSearch);
         router.back();
       }
     } else {
       setLoading(true);
       await createCard(curDeckId, values);
-      getBrowseCards(curDeckId, browseSearch);
+      await getDecks();
       setValues({ meaning: '', reading: '', sentence: '', word: '' });
       setLoading(false);
+    }
+
+    if (fromPath === 'browse') {
+      getBrowseCards();
+    }
+    if (fromPath === 'review-cards') {
+      setReloadWindowingCards(true);
     }
   };
 
@@ -107,7 +115,7 @@ const Card = () => {
           data={mappedDecks}
           value={String(curDeckId)}
           onChange={handleChangeDeck}
-          disabled={loading}
+          disabled={loading || Boolean(card)}
         />
         <CardInput
           label='Từ vựng'

@@ -1,9 +1,6 @@
-import { getDeckById } from '@/constants/Query';
-import { Deck, useAnkiContext } from '@/context/ankiContext';
-import { useAppContext } from '@/context/appContext';
+import { useAnkiContext } from '@/context/ankiContext';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -14,56 +11,51 @@ import {
 } from 'react-native';
 
 const UpdateDeck = () => {
-  const { user } = useAppContext();
-  const { updateDeck } = useAnkiContext();
-  const params = useLocalSearchParams() as { deckId: string };
-  const deckId = params.deckId;
-  const [deck, setDeck] = useState<Deck>();
-  const db = useSQLiteContext();
+  const { updateDeck, decks, getDecks, setReloadWindowingCards } =
+    useAnkiContext();
+  const {
+    deckId,
+    fromPath,
+  }: {
+    deckId: string;
+    fromPath: string;
+  } = useLocalSearchParams();
   const [deckName, setDeckName] = useState('');
   const [numCards, setNumCards] = useState('');
-  const nameInputRef = useRef<TextInput>(null);
+  const deck = useMemo(
+    () => decks.find(({ id }) => id === Number.parseInt(deckId)),
+    [decks, deckId]
+  );
+
   const isFormValid = deckName.trim() !== '' && numCards.trim() !== '';
 
   const handleCancel = () => {
-    router.dismiss();
+    router.back();
   };
 
   const handleUpdateDeck = async () => {
-    if (deckName.trim() && numCards.trim()) {
-      const updatedDeck = {
-        id: deck!.id,
-        localUpdatedDate: new Date(),
-        updatedDate: new Date(),
+    if (deck && deckName.trim() && numCards.trim()) {
+      await updateDeck({
+        ...deck,
         name: deckName,
-        newCardQuantity: parseInt(numCards, 10),
-        learning: deck?.learning,
-        new: deck?.new,
-        review: deck?.review,
-      };
-      await updateDeck(updatedDeck);
-      router.dismissAll();
+        newCardQuantity: Number.parseInt(numCards),
+      });
+      await getDecks();
+
+      if (fromPath === 'review-cards') {
+        setReloadWindowingCards(true);
+      }
+
+      router.back();
     }
   };
 
   useEffect(() => {
-    if (nameInputRef.current) {
-      setTimeout(() => {
-        nameInputRef.current!.focus();
-      }, 100);
-    }
+    if (!deck) return;
 
-    const fetchDeck = async (deckId: number) => {
-      const deckResult: any = await db.getFirstAsync(getDeckById, deckId);
-      setDeck(deckResult);
-      setDeckName(deckResult.name);
-      setNumCards(deckResult.newCardQuantity.toString());
-    };
-
-    if (deckId) {
-      fetchDeck(parseInt(deckId as string, 10));
-    }
-  }, [deckId]);
+    setDeckName(deck.name);
+    setNumCards(String(deck.newCardQuantity));
+  }, [deck]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -74,7 +66,6 @@ const UpdateDeck = () => {
           </Text>
           <Text className='text-text text-xl my-1'>Tên bộ thẻ:</Text>
           <TextInput
-            ref={nameInputRef}
             value={deckName}
             onChangeText={setDeckName}
             className='p-2 mb-2 border-2 border-[#CBD5E1] focus:border-primary rounded-lg text-text text-xl caret-primary'
