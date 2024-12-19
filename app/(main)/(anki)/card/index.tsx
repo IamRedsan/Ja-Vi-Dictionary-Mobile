@@ -2,7 +2,7 @@ import CardHeader from '@/components/anki/CardHeader';
 import CardInput from '@/components/anki/CardInput';
 import Button from '@/components/ui/Button';
 import DropdownWithLabel from '@/components/ui/DropdownWithLabel';
-import { useAnkiContext } from '@/context/ankiContext';
+import { AddUndoType, useAnkiContext } from '@/context/ankiContext';
 import { AnkiCard, WordType } from '@/utils/ankiUtils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
@@ -52,8 +52,13 @@ const Card = () => {
       card.reading = values.reading;
       card.meaning = values.meaning;
 
+      let addUndoType = AddUndoType.NONE;
+      if (fromPath === 'review-cards') {
+        addUndoType = AddUndoType.NEW;
+      }
+
       setLoading(true);
-      await updateCard(card);
+      await updateCard(card, addUndoType);
       setLoading(false);
 
       if (router.canGoBack()) {

@@ -5,7 +5,7 @@ import { useAnkiContext } from '@/context/ankiContext';
 import { useRouter } from 'expo-router';
 
 const Table = () => {
-  const { decks, curDeckId, setCurDeckId } = useAnkiContext();
+  const { decks, curDeckId, setCurDeckId, clearAllUndo } = useAnkiContext();
   const router = useRouter();
 
   const handleOnPressRow = (deckId: number) => {
@@ -13,6 +13,7 @@ const Table = () => {
       setCurDeckId(deckId);
       return;
     }
+    clearAllUndo();
     router.push({
       pathname: '/(main)/(anki)/card/review-cards',
       params: { deckId },

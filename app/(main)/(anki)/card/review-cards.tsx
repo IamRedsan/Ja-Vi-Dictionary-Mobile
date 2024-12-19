@@ -1,6 +1,6 @@
 import { FuriText } from '@/components/word/FuriText';
-import { CardCounts, Deck, useAnkiContext } from '@/context/ankiContext';
-import { AnkiCard, getSchedulingCards } from '@/utils/ankiUtils';
+import { useAnkiContext } from '@/context/ankiContext';
+import { AnkiCard, AnkiReviewLog, getSchedulingCards } from '@/utils/ankiUtils';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -15,7 +15,7 @@ import {
   TouchableWithoutFeedback,
   TouchableHighlight,
 } from 'react-native';
-import { Rating, ReviewLog } from 'ts-fsrs';
+import { Rating } from 'ts-fsrs';
 import CircleSpin from '@/components/loading/CircleSpin';
 cssInterop(Entypo, {
   className: {
@@ -45,6 +45,8 @@ const ReviewCards = () => {
     decks,
     reloadWindowingCards,
     setReloadWindowingCards,
+    undo,
+    undoActions,
   } = useAnkiContext();
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const { colorScheme } = useColorScheme();
@@ -53,7 +55,7 @@ const ReviewCards = () => {
         [K in Exclude<keyof typeof Rating, 'Manual'>]: {
           timeFromNow: string;
           card: AnkiCard;
-          log: ReviewLog;
+          log: AnkiReviewLog;
         };
       }
     | null
@@ -86,7 +88,9 @@ const ReviewCards = () => {
     setSchedulingCards(null);
   };
 
-  const handleBackCard = () => {};
+  const handleBackCard = async () => {
+    await undo();
+  };
 
   useEffect(() => {
     if (!reloadWindowingCards) return;
@@ -95,6 +99,7 @@ const ReviewCards = () => {
       setLoadingGetCards(true);
       await getWindowingCards();
       setLoadingGetCards(false);
+
       setReloadWindowingCards(false);
     };
 
@@ -119,7 +124,9 @@ const ReviewCards = () => {
           <View className='flex-row items-center justify-between px-3'>
             <Text className='text-2xl text-center text-text'>Thẻ ghi nhớ</Text>
             <View className='flex-row gap-4'>
-              <TouchableOpacity onPress={handleBackCard}>
+              <TouchableOpacity
+                onPress={handleBackCard}
+                disabled={undoActions.length === 0}>
                 <AntDesign name='back' className='text-2xl text-icon' />
               </TouchableOpacity>
               <TouchableOpacity
