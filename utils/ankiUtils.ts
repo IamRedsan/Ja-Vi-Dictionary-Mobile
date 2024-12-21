@@ -1,5 +1,14 @@
 import { Deck } from '@/context/ankiContext';
-import { Card, createEmptyCard, fsrs, Rating, ReviewLog } from 'ts-fsrs';
+import {
+  Card,
+  createEmptyCard,
+  fsrs,
+  Grade,
+  Grades,
+  Rating,
+  RecordLog,
+  ReviewLog,
+} from 'ts-fsrs';
 
 export interface WordType {
   word: string;
@@ -13,24 +22,45 @@ export interface AnkiCard extends Card, WordType {
   deckId: number;
   createdDate: Date;
   updatedDate: Date;
-  localUpdatedDate: Date;
-  action: Action;
-}
-
-export enum Action {
-  CREATE = 0,
-  UPDATE = 1,
-  DELETE = 2,
-  NONE = 3,
 }
 
 export interface AnkiReviewLog extends ReviewLog {
+  id: number;
   deckId: number;
   cardId: number;
-  action: Action;
+  createdDate: Date;
+}
+
+interface AnkiRecordLog {
+  card: AnkiCard;
+  log: AnkiReviewLog;
 }
 
 export const f = fsrs();
+
+const repeatAfterHandler = (recordLog: RecordLog) => {
+  const record: { [key in Grade]: AnkiRecordLog } = {} as {
+    [key in Grade]: AnkiRecordLog;
+  };
+
+  const curDate = new Date();
+
+  for (const grade of Grades) {
+    const card = recordLog[grade].card as AnkiCard;
+
+    record[grade] = {
+      card: { ...card, updatedDate: curDate },
+      log: {
+        ...recordLog[grade].log,
+        id: -1,
+        cardId: card.id,
+        deckId: card.deckId,
+        createdDate: curDate,
+      },
+    };
+  }
+  return record;
+};
 
 export const createCard = (deckId: number, wordType: WordType): AnkiCard => {
   const curDate = new Date();
@@ -42,8 +72,6 @@ export const createCard = (deckId: number, wordType: WordType): AnkiCard => {
     deckId,
     createdDate: curDate,
     updatedDate: curDate,
-    localUpdatedDate: curDate,
-    action: Action.CREATE,
   }));
 
   return card;
@@ -55,18 +83,18 @@ export const getSchedulingCards = (
   [K in Exclude<keyof typeof Rating, 'Manual'>]: {
     timeFromNow: string;
     card: AnkiCard;
-    log: ReviewLog;
+    log: AnkiReviewLog;
   };
 } => {
-  const schedulingCards = f.repeat(card, new Date());
+  const schedulingCards = f.repeat(card, new Date(), repeatAfterHandler);
 
-  const againCard = schedulingCards[Rating.Again].card as AnkiCard;
+  const againCard = schedulingCards[Rating.Again].card;
   const againReviewLog = schedulingCards[Rating.Again].log;
-  const hardCard = schedulingCards[Rating.Hard].card as AnkiCard;
+  const hardCard = schedulingCards[Rating.Hard].card;
   const hardReviewLog = schedulingCards[Rating.Hard].log;
-  const goodCard = schedulingCards[Rating.Good].card as AnkiCard;
+  const goodCard = schedulingCards[Rating.Good].card;
   const goodReviewLog = schedulingCards[Rating.Good].log;
-  const easyCard = schedulingCards[Rating.Easy].card as AnkiCard;
+  const easyCard = schedulingCards[Rating.Easy].card;
   const easyReviewLog = schedulingCards[Rating.Easy].log;
 
   return {
@@ -121,7 +149,6 @@ export const mapCard: (card: any) => AnkiCard = (card: any) => {
     ...card,
     createdDate: new Date(card.createdDate),
     updatedDate: new Date(card.updatedDate),
-    localUpdatedDate: new Date(card.localUpdatedDate),
     due: new Date(card.due),
     last_review: card.last_review ? new Date(card.last_review) : null,
   };
@@ -132,15 +159,17 @@ export const mapDeck: (deck: any) => Deck = (deck: any) => {
     ...deck,
     createdDate: new Date(deck.createdDate),
     updatedDate: new Date(deck.updatedDate),
-    localUpdatedDate: new Date(deck.localUpdatedDate),
   };
 };
 
-export const mapReviewLog: (reviewLog: any) => ReviewLog = (reviewLog: any) => {
+export const mapReviewLog: (reviewLog: any) => AnkiReviewLog = (
+  reviewLog: any
+) => {
   return {
     ...reviewLog,
     review: new Date(reviewLog.review),
     due: new Date(reviewLog.due),
+    createdDate: new Date(reviewLog.createdDate),
   };
 };
 

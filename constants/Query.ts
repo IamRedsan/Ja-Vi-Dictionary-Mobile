@@ -1,5 +1,5 @@
-import { Action } from '@/utils/ankiUtils';
 import { State } from 'ts-fsrs';
+import * as Crypto from 'expo-crypto';
 
 export const createTablesQuery = `
   CREATE TABLE IF NOT EXISTS decks (
@@ -7,9 +7,7 @@ export const createTablesQuery = `
     name TEXT NOT NULL,
     newCardQuantity INTEGER NOT NULL,
     createdDate TEXT NOT NULL,
-    updatedDate TEXT NOT NULL,
-    localUpdatedDate TEXT NOT NULL,
-    action INTEGER NOT NULL
+    updatedDate TEXT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS cards (
@@ -29,12 +27,11 @@ export const createTablesQuery = `
     state INTEGER NOT NULL,
     deckId INTEGER NOT NULL,
     createdDate TEXT NOT NULL,
-    updatedDate TEXT NOT NULL,
-    localUpdatedDate TEXT NOT NULL,
-    action INTEGER NOT NULL
+    updatedDate TEXT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS reviewLogs (
+    id INTEGER PRIMARY KEY,
     difficulty REAL NOT NULL,
     due TEXT NOT NULL,
     elapsed_days INTEGER NOT NULL,
@@ -46,27 +43,57 @@ export const createTablesQuery = `
     state INTEGER NOT NULL,
     deckId INTEGER NOT NULL,
     cardId INTEGER NOT NULL,
-    createdDate TEXT NOT NULL,
-    updatedDate TEXT NOT NULL,
-    localUpdatedDate TEXT NOT NULL,
-    action INTEGER NOT NULL
+    createdDate TEXT NOT NULL
+    );
+
+  CREATE TABLE IF NOT EXISTS actionLogs (
+    id TEXT PRIMARY KEY,
+    action INTEGER NOT NULL,
+    targetTable INTEGER NOT NULL,
+    targetId INTEGER NOT NULL,
+    createdDate TEXT NOT NULL
   );
+  
+  CREATE INDEX IF NOT EXISTS idx_actionLogs_createdDate ON actionLogs (createdDate DESC);
 `;
+
+export const enum Action {
+  CREATE = 0,
+  UPDATE = 1,
+  DELETE = 2,
+}
+
+export interface ActionLog {
+  id: string;
+  action: number;
+  targetTable: Table;
+  targetId: number;
+  createdDate: Date;
+}
+
+export const enum Table {
+  DECK = 0,
+  CARD = 1,
+  REVIEW_LOG = 2,
+}
+
+export const generateActionLogId = () => {
+  return Crypto.getRandomBytes(8).toString();
+};
 
 export const getDeckQuery = `
   SELECT * FROM decks
-  WHERE id = ? AND action != ${Action.DELETE};
+  WHERE id = ?;
 `;
 
 export const getDecksQuery = `
   SELECT * FROM decks
-  WHERE action != ${Action.DELETE}
   ORDER BY id ASC;
 `;
 
 export const createDeckQuery = `
-  INSERT INTO decks (name, newCardQuantity, createdDate, updatedDate, localUpdatedDate, action)
-  VALUES (?, ?, ?, ?, ?, ${Action.CREATE});
+  INSERT INTO decks (name, newCardQuantity, createdDate, updatedDate)
+  VALUES (?, ?, ?, ?);
 `;
 
 export const updateDeckQuery = `
@@ -74,16 +101,12 @@ export const updateDeckQuery = `
   SET
     name = ?, 
     newCardQuantity = ?, 
-    localUpdatedDate = ?,
-    action = ${Action.UPDATE}
+    updatedDate = ?
   WHERE id = ?;
 `;
 
 export const deleteDeckQuery = `
-  UPDATE decks
-  SET
-    action = ${Action.DELETE},
-    localUpdatedDate = ?
+  DELETE FROM decks
   WHERE id = ?;
 `;
 
@@ -94,7 +117,7 @@ export const getTodayCardCountsQuery = `
     SUM(CASE WHEN state = ${State.Learning} OR state = ${State.Relearning} THEN 1 ELSE 0 END) AS learning,
     SUM(CASE WHEN state = ${State.Review} THEN 1 ELSE 0 END) AS review
   FROM cards
-  WHERE due < ? AND action != ${Action.DELETE}
+  WHERE due < ?
   GROUP BY deckId
   ORDER BY deckId ASC;
 `;
@@ -102,7 +125,7 @@ export const getTodayCardCountsQuery = `
 export const getNewCardLearnedTodayCountsQuery = `
   SELECT deckId AS id, COUNT(*) AS new
   FROM reviewLogs
-  WHERE ? <= review AND review < ? AND action != ${Action.DELETE} AND state = ${State.New}
+  WHERE ? <= review AND review < ? AND state = ${State.New}
   GROUP BY deckId
   ORDER BY deckId ASC;
 `;
@@ -110,7 +133,7 @@ export const getNewCardLearnedTodayCountsQuery = `
 export const getCardsQuery = `
   SELECT *
   FROM cards
-  WHERE deckId = ? AND action != ${Action.DELETE}
+  WHERE deckId = ?
     AND (
       word LIKE '%' || ? || '%' OR
       sentence LIKE '%' || ? || '%' OR
@@ -122,7 +145,7 @@ export const getCardsQuery = `
 export const getCardQuery = `
   SELECT * 
   FROM cards
-  WHERE id = ? AND action != ${Action.DELETE};
+  WHERE id = ?;
 `;
 
 export const getWindowingCardsQuery = `
@@ -131,7 +154,6 @@ export const getWindowingCardsQuery = `
     SELECT *
     FROM cards
     WHERE deckId = ? AND state != ${State.New}
-      AND action != ${Action.DELETE}
       AND due < ?
 
     UNION ALL
@@ -141,7 +163,6 @@ export const getWindowingCardsQuery = `
       SELECT *
       FROM cards
       WHERE deckId = ? AND state = ${State.New}
-        AND action != ${Action.DELETE}
         AND due < ?
       LIMIT ?
     )
@@ -166,12 +187,35 @@ export const createCardQuery = `
     state,
     deckId,
     createdDate,
-    updatedDate,
-    localUpdatedDate,
-    action
+    updatedDate
   ) 
   VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${Action.CREATE}
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  );
+`;
+
+export const pureCreateCardQuery = `
+  INSERT INTO cards (
+    id,
+    word,
+    sentence,
+    reading,
+    meaning,
+    difficulty,
+    due,
+    elapsed_days,
+    lapses,
+    last_review,
+    reps,
+    scheduled_days,
+    stability,
+    state,
+    deckId,
+    createdDate,
+    updatedDate
+  ) 
+  VALUES (
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
   );
 `;
 
@@ -192,24 +236,17 @@ export const updateCardQuery = `
     stability = ?, 
     state = ?, 
     deckId = ?, 
-    localUpdatedDate = ?, 
-    action = ${Action.UPDATE}
+    updatedDate = ?
   WHERE id = ?;
 `;
 
 export const deleteCardQuery = `
-  UPDATE cards
-  SET
-    action = ${Action.DELETE},
-    localUpdatedDate = ?
+  DELETE FROM cards
   WHERE id = ?;
 `;
 
 export const deleteCardsByDeckIdQuery = `
-  UPDATE cards
-  SET
-    action = ${Action.DELETE},
-    localUpdatedDate = ?
+  DELETE FROM cards
   WHERE deckId = ?;
 `;
 
@@ -226,26 +263,62 @@ export const createReviewLogQuery = `
   state,
   deckId,
   cardId,
-  createdDate,
-  updatedDate,
-  localUpdatedDate,
-  action
-)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${Action.CREATE});
+  createdDate
+  )
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+`;
+
+export const pureCreateReviewLogQuery = `
+  INSERT INTO reviewLogs (
+  id,
+  difficulty,
+  due,
+  elapsed_days,
+  last_elapsed_days,
+  rating,
+  review,
+  scheduled_days,
+  stability,
+  state,
+  deckId,
+  cardId,
+  createdDate
+  )
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+`;
+
+export const getReviewLogsByCardIdQuery = `
+  SELECT * FROM reviewLogs
+  WHERE cardId = ?;
+`;
+
+export const deleteReviewLogQuery = `
+  DELETE FROM reviewLogs
+  WHERE id = ?;
 `;
 
 export const deleteReviewLogsByCardIdQuery = `
-  UPDATE reviewLogs
-  SET
-    action = ${Action.DELETE},
-    localUpdatedDate = ?
+  DELETE FROM reviewLogs
   WHERE cardId = ?;
 `;
 
 export const deleteReviewLogsByDeckIdQuery = `
-  UPDATE reviewLogs
-  SET
-    action = ${Action.DELETE},
-    localUpdatedDate = ?
+  DELETE FROM reviewLogs
   WHERE deckId = ?;
+`;
+
+export const createActionLogQuery = `
+  INSERT INTO actionLogs (id, action, targetTable, targetId, createdDate)
+  VALUES (?, ?, ?, ?, ?);
+`;
+
+export const getLatestActionLogQuery = `
+  SELECT * FROM actionLogs
+  ORDER BY createdDate DESC
+  LIMIT 1;
+`;
+
+export const deleteActionLogQuery = `
+  DELETE FROM actionLogs
+  WHERE id = ?;
 `;

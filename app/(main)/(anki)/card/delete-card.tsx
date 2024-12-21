@@ -1,5 +1,5 @@
 import Button from '@/components/ui/Button';
-import { useAnkiContext } from '@/context/ankiContext';
+import { AddUndoType, useAnkiContext } from '@/context/ankiContext';
 import { router, useLocalSearchParams } from 'expo-router';
 import { View, Text, TouchableWithoutFeedback } from 'react-native';
 const DeleteCard = () => {
@@ -9,7 +9,12 @@ const DeleteCard = () => {
     useAnkiContext();
 
   const handleDeleteCard = async () => {
-    await deleteCard(Number.parseInt(cardId));
+    let addUndoType = AddUndoType.NONE;
+    if (fromPath === 'review-cards') {
+      addUndoType = AddUndoType.NEW;
+    }
+
+    await deleteCard(Number.parseInt(cardId), addUndoType);
     await getDecks();
     if (fromPath === 'browse') {
       getBrowseCards();
