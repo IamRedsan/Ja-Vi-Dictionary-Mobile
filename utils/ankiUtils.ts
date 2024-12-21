@@ -1,4 +1,9 @@
-import { Deck } from '@/context/ankiContext';
+import {
+  Deck,
+  HeatmapData,
+  PiechartData,
+  PiechartInput,
+} from '@/context/ankiContext';
 import {
   Card,
   createEmptyCard,
@@ -8,7 +13,9 @@ import {
   Rating,
   RecordLog,
   ReviewLog,
+  State,
 } from 'ts-fsrs';
+import { formatDateToString } from './dateFormatUtil';
 
 export interface WordType {
   word: string;
@@ -173,6 +180,13 @@ export const mapReviewLog: (reviewLog: any) => AnkiReviewLog = (
   };
 };
 
+export const mapDataHeatmap: (heatmap: any) => HeatmapData = (heatmap: any) => {
+  return {
+    ...heatmap,
+    date: formatDateToString(heatmap.date),
+  };
+};
+
 export const getBeNotGone = () => {
   const now = new Date();
   const nextMidnight = new Date(
@@ -184,4 +198,40 @@ export const getBeNotGone = () => {
     0
   );
   return nextMidnight.toISOString();
+};
+
+export const mapPiechartData: (piechart: PiechartInput) => PiechartData = (
+  piechart: PiechartInput
+) => {
+  let color: string;
+  let name: string;
+  switch (piechart.state) {
+    case State.New:
+      name = 'Mới';
+      color = '#6BAED6';
+      break;
+    case State.Learning:
+      name = 'Đang học';
+      color = '#F98B3B';
+      break;
+    case State.Relearning:
+      name = 'Đang học lại';
+      color = '#F76849';
+      break;
+    case State.Review:
+      name = 'Ôn tập';
+      color = '#31A354';
+      break;
+    default:
+      name = '';
+      color = '#000000';
+  }
+
+  return {
+    name,
+    population: piechart.count,
+    color,
+    legendFontSize: 12,
+    legendFontColor: '',
+  };
 };

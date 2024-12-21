@@ -14,3 +14,18 @@ export const dateFormat = (isoTimestamp: Date) => {
   const formattedTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   return formattedTime;
 };
+
+export function formatDateToString(date: string | Date): string {
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
+
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    throw new Error('Invalid Date');
+  }
+
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
