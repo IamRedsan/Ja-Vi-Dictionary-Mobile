@@ -5,7 +5,7 @@ import Toast from 'react-native-toast-message';
 import { EventProvider } from 'react-native-outside-press';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import AnkiProvider from '@/context/ankiContext';
 import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
 import { View } from 'react-native';
@@ -29,7 +29,7 @@ const RootLayout: React.FC = () => {
   }
 
   return (
-    <>
+    <React.Fragment>
       <AppProvider>
         <Suspense fallback={<View />}>
           <SQLiteProvider
@@ -57,7 +57,7 @@ const RootLayout: React.FC = () => {
         </Suspense>
       </AppProvider>
       <Toast />
-    </>
+    </React.Fragment>
   );
 };
 

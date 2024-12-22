@@ -12,7 +12,7 @@ const DeckModal = () => {
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        router.dismiss();
+        router.back();
       }}>
       <View className='flex-1 justify-center bg-[rgba(0,0,0,0.54)]'>
         <TouchableWithoutFeedback>

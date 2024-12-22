@@ -1,6 +1,7 @@
 import { client } from '@/client/axiosClient';
 import FormRow from '@/components/form/FormRow';
 import Button from '@/components/ui/Button';
+import { useAppContext } from '@/context/appContext';
 import { AxiosError } from 'axios';
 import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -8,15 +9,14 @@ import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
-const Register: React.FC = () => {
+const Login: React.FC = () => {
   const [values, setValues] = useState({
     email: '',
-    fullname: '',
     password: '',
-    rePassword: '',
   });
-  const router = useRouter();
+  const { setUser } = useAppContext();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const onChangeText = (key: keyof typeof values, value: string) => {
     setValues((values) => ({
@@ -25,35 +25,41 @@ const Register: React.FC = () => {
     }));
   };
 
-  const handleRegister = async () => {
-    if (values.password !== values.rePassword) {
-      Toast.show({
-        type: 'info',
-        text1: 'Mật khẩu không khớp',
-        text2: 'Vui lòng kiểm tra lại',
-      });
-      return;
-    }
-
+  const handleLogin = async () => {
     setLoading(true);
 
     try {
-      await client.post('/auth/sign-up', {
-        fullname: values.fullname,
+      const response = await client.post('/auth/login', {
         email: values.email,
         password: values.password,
       });
 
-      router.navigate({ pathname: '/verify', params: { email: values.email } });
+      const { user, refreshToken, accessToken } = response.data.data;
+      await setUser(user, accessToken, refreshToken);
     } catch (err) {
       const e = err as AxiosError;
-      const message = (e.response?.data as any)?.message as any;
-      Toast.show({
-        type: 'error',
-        text1: 'Đã có lỗi xảy ra',
-        text2: message ?? 'Lỗi không xác định',
-        autoHide: true,
-      });
+      if (e.response?.status === 403) {
+        Toast.show({
+          type: 'info',
+          text1: 'Chưa xác thực tài khoản',
+          text2: 'Vui lòng xác thực tài khoản qua email',
+          autoHide: true,
+        });
+        router.navigate({
+          pathname: '/verify',
+          params: {
+            email: values.email,
+          },
+        });
+      } else {
+        const message = (e.response?.data as any)?.message as any;
+        Toast.show({
+          type: 'error',
+          text1: 'Đã có lỗi xảy ra',
+          text2: message ?? 'Lỗi không xác định',
+          autoHide: true,
+        });
+      }
     }
 
     setLoading(false);
@@ -63,53 +69,39 @@ const Register: React.FC = () => {
     <SafeAreaView className='bg-tertiary-background flex-1'>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className='bg-tertiary-background flex-1 items-center justify-center'>
-          <Text className='text-text text-[24px] mb-10'>Đăng ký tài khoản</Text>
+          <Text className='text-text text-[24px] mb-10'>
+            Chào mừng trở lại!
+          </Text>
           <View className='w-[80%] gap-4'>
             <FormRow
-              editable={!loading}
               label='Email'
               placeHolder='name@email.com'
               text={values.email}
               onChangeText={(value) => onChangeText('email', value)}
+              editable={!loading}
             />
             <FormRow
-              editable={!loading}
-              label='Họ và tên'
-              placeHolder='fullname'
-              text={values.fullname}
-              onChangeText={(value) => onChangeText('fullname', value)}
-            />
-            <FormRow
-              editable={!loading}
               label='Mật khẩu'
               placeHolder='********'
               text={values.password}
               onChangeText={(value) => onChangeText('password', value)}
               secureTextEntry
-            />
-            <FormRow
               editable={!loading}
-              label='Nhập lại mật khẩu'
-              placeHolder='********'
-              text={values.rePassword}
-              onChangeText={(value) => onChangeText('rePassword', value)}
-              secureTextEntry
             />
-            <Button
-              className='mt-[20px]'
-              onPress={handleRegister}
-              disabled={loading}>
-              Đăng ký
+            <View className='flex-row justify-between'>
+              <View />
+              <Link href='/forgot-password' className='text-primary' disabled>
+                Quên mật khẩu?
+              </Link>
+            </View>
+            <Button onPress={handleLogin} disabled={loading}>
+              Đăng nhập
             </Button>
           </View>
           <Text className='text-text mt-16'>
-            Đã có tài khoản?{' '}
-            <Link
-              href='/login'
-              className='text-primary'
-              disabled={loading}
-              replace>
-              Đăng nhập ngay
+            Chưa có tài khoản?{' '}
+            <Link href='/register' className='text-primary' disabled={loading}>
+              Đăng ký ngay
             </Link>
           </Text>
         </View>
@@ -117,4 +109,4 @@ const Register: React.FC = () => {
     </SafeAreaView>
   );
 };
-export default Register;
+export default Login;
