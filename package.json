@@ -25,6 +25,7 @@
     "expo-checkbox": "~4.0.0",
     "expo-clipboard": "~7.0.0",
     "expo-constants": "~17.0.3",
+    "expo-crypto": "~14.0.1",
     "expo-font": "~13.0.1",
     "expo-image": "~2.0.3",
     "expo-image-manipulator": "~13.0.5",
@@ -44,8 +45,10 @@
     "lottie-react-native": "7.1.0",
     "nativewind": "^4.1.21",
     "react": "18.3.1",
+    "react-contribution-calendar": "^1.5.3",
     "react-dom": "18.3.1",
     "react-native": "0.76.3",
+    "react-native-chart-kit": "^6.12.0",
     "react-native-dynamic-skeletons": "^0.7.0",
     "react-native-element-dropdown": "^2.12.2",
     "react-native-gesture-handler": "~2.20.2",
@@ -68,8 +71,7 @@
     "tailwindcss-hit-slop": "^1.0.1",
     "ts-fsrs": "^4.5.0",
     "uuid": "^11.0.3",
-    "wanakana": "^5.3.1",
-    "expo-crypto": "~14.0.1"
+    "wanakana": "^5.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

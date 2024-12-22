@@ -69,9 +69,11 @@ const Decks = () => {
         <View className='flex-row items-center justify-between px-3'>
           <Text className='text-2xl text-center text-text'>Thẻ ghi nhớ</Text>
           <View className='flex-row gap-4 justify-center items-center'>
-            <TouchableOpacity>
-              <Entypo name='bar-graph' className='text-2xl text-icon' />
-            </TouchableOpacity>
+            <Link href='/graph' asChild>
+              <TouchableOpacity>
+                <Entypo name='bar-graph' className='text-2xl text-icon' />
+              </TouchableOpacity>
+            </Link>
             <TouchableOpacity>
               <MaterialIcons name='sync' className='text-3xl text-icon' />
             </TouchableOpacity>

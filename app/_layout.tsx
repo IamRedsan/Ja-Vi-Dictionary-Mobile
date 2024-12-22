@@ -9,7 +9,7 @@ import { Suspense, useEffect } from 'react';
 import AnkiProvider from '@/context/ankiContext';
 import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
 import { View } from 'react-native';
-import { createTablesQuery } from '@/constants/Query';
+import { createTablesQuery, deleteTablesQuery } from '@/constants/Query';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,7 +32,10 @@ const RootLayout: React.FC = () => {
     <>
       <AppProvider>
         <Suspense fallback={<View />}>
-          <SQLiteProvider databaseName='anki.db' onInit={initDb} useSuspense>
+          <SQLiteProvider
+            databaseName='anki.dbtest'
+            onInit={initDb}
+            useSuspense>
             <AnkiProvider>
               <EventProvider>
                 <Stack
@@ -59,6 +62,7 @@ const RootLayout: React.FC = () => {
 };
 
 const initDb = async (db: SQLiteDatabase) => {
+  // await db.execAsync(deleteTablesQuery);
   await db.execAsync(createTablesQuery);
 };
 

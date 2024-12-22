@@ -4,7 +4,9 @@ import {
   createCard as createFsrsCard,
   getBeNotGone,
   mapCard,
+  mapDataHeatmap,
   mapDeck,
+  mapPiechartData,
   mapReviewLog,
   WordType,
 } from '@/utils/ankiUtils';
@@ -29,7 +31,9 @@ import {
   getCardQuery,
   getCardsQuery,
   getDecksQuery,
+  getHeatmapDataQuery,
   getNewCardLearnedTodayCountsQuery,
+  getPiechartDataQuery,
   getReviewLogsByCardIdQuery,
   getTodayCardCountsQuery,
   getWindowingCardsQuery,
@@ -40,6 +44,7 @@ import {
   updateDeckQuery,
 } from '@/constants/Query';
 import { State } from 'ts-fsrs';
+import { formatDateToString } from '@/utils/dateFormatUtil';
 
 export interface Deck {
   id: number;
@@ -56,10 +61,28 @@ export interface CardCounts {
   review: number;
 }
 
+export interface HeatmapData {
+  date: String;
+  count: number;
+}
+
 export enum AddUndoType {
   NONE = 0,
   NEW = 1,
   CONC = 2,
+}
+
+export interface PiechartInput {
+  state: State;
+  count: number;
+}
+
+export interface PiechartData {
+  name: string;
+  population: number;
+  color: string;
+  legendFontSize: number;
+  legendFontColor: string;
 }
 
 export type AnkiStateType = {
@@ -96,6 +119,8 @@ export type AnkiContextType = AnkiStateType & {
   getCardById: (id: number) => Promise<AnkiCard | null>;
   undo: () => Promise<void>;
   clearAllUndo: () => void;
+  getHeatmapData: (deckId: number) => Promise<HeatmapData[]>;
+  getPiechartData: (deckId: number) => Promise<PiechartData[]>;
 };
 
 export const AnkiContext = createContext<AnkiContextType | null>(null);
@@ -645,6 +670,49 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const getHeatmapData = async (deckId: number) => {
+    const heatmapData: { date: string }[] = await db.getAllAsync(
+      getHeatmapDataQuery,
+      deckId
+    );
+
+    const heatmapDataMap = new Map<string, number>();
+
+    heatmapData.forEach((data) => {
+      const formattedDate = formatDateToString(data.date);
+      heatmapDataMap.set(
+        formattedDate,
+        (heatmapDataMap.get(formattedDate) || 0) + 1
+      );
+    });
+
+    const formattedHeatmapData: HeatmapData[] = Array.from(
+      heatmapDataMap,
+      ([date, count]) => ({
+        date,
+        count,
+      })
+    );
+
+    return formattedHeatmapData;
+  };
+
+  const getPiechartData = async (deckId: number) => {
+    const piechartData: PiechartInput[] = await db.getAllAsync(
+      getPiechartDataQuery,
+      deckId
+    );
+    const allStates: State[] = Object.values(State).filter(
+      (value) => typeof value === 'number'
+    ) as State[];
+    const completedPiechartData: PiechartInput[] = allStates.map((state) => {
+      const existingData = piechartData.find((item) => item.state === state);
+      return existingData || { state, count: 0 };
+    });
+    const formattedPiechartData = completedPiechartData.map(mapPiechartData);
+    return formattedPiechartData;
+  };
+
   useEffect(() => {
     if (user) {
       getDecks();
@@ -686,6 +754,8 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
         getCardById,
         undo,
         clearAllUndo,
+        getHeatmapData,
+        getPiechartData,
       }}>
       {children}
     </AnkiContext.Provider>

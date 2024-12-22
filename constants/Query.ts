@@ -1,6 +1,12 @@
 import { State } from 'ts-fsrs';
 import * as Crypto from 'expo-crypto';
 
+export const deleteTablesQuery = `
+  DROP TABLES IF EXISTS decks;
+  DROP TABLES IF EXISTS cards;
+  DROP TABLES IF EXISTS reviewLogs;
+`;
+
 export const createTablesQuery = `
   CREATE TABLE IF NOT EXISTS decks (
     id INTEGER PRIMARY KEY,
@@ -321,4 +327,18 @@ export const getLatestActionLogQuery = `
 export const deleteActionLogQuery = `
   DELETE FROM actionLogs
   WHERE id = ?;
+`;
+
+export const getHeatmapDataQuery = `
+  SELECT due AS date
+  FROM reviewLogs
+  WHERE deckId = ? AND state = ${State.New}
+  ORDER BY due;
+`;
+
+export const getPiechartDataQuery = `
+  SELECT state, COUNT(*) AS count
+  FROM cards
+  WHERE deckId = ?
+  GROUP BY state; 
 `;
