@@ -41,8 +41,7 @@ const Verify = () => {
         text2: 'Vui lòng đăng nhập lại',
       });
 
-      router.dismiss();
-      router.replace('/login');
+      router.navigate('/login');
     } catch (err) {
       Toast.show({
         type: 'error',

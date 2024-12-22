@@ -18,14 +18,14 @@ const CreateDeck = () => {
   const isFormValid = deckName.trim() !== '' && numCards.trim() !== '';
 
   const handleCancel = () => {
-    router.dismiss();
+    router.back();
   };
 
   const handleCreateDeck = async () => {
     if (deckName.trim() && numCards.trim()) {
       await createDeck(deckName, Number.parseInt(numCards));
       await getDecks();
-      router.dismiss();
+      router.back();
     }
   };
 

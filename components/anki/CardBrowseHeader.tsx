@@ -1,7 +1,7 @@
 import Dropdown from '@/components/ui/Dropdown';
 import { View, TextInput, Keyboard } from 'react-native';
 import AntDesignIconButton from '@/components/ui/AntDesignIconButton';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { useAnkiContext } from '@/context/ankiContext';
 
@@ -63,7 +63,7 @@ const CardBrowseHeader = () => {
           onChangeText={handleLocalSearchTextChanged}
         />
       ) : (
-        <>
+        <React.Fragment>
           <Dropdown
             data={mappedDecks}
             iconName='book'
@@ -79,7 +79,7 @@ const CardBrowseHeader = () => {
             asChild>
             <AntDesignIconButton iconName='plus' disabled={browseLoading} />
           </Link>
-        </>
+        </React.Fragment>
       )}
       <AntDesignIconButton
         iconName='search1'

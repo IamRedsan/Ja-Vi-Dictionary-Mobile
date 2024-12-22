@@ -89,7 +89,7 @@ const CommentContainer: React.FC<CommentContainerProps> = ({
   };
 
   const handleClickOutside = () => {
-    Keyboard.dismiss;
+    Keyboard.dismiss();
     setIsOptionsVisible(false);
     setCommentTitle(commentValue);
     if (inputRef.current) {

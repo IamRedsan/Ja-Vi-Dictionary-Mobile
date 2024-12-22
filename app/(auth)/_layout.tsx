@@ -1,34 +1,22 @@
 import Stack from '@/components/Stack';
-import { Stack as S } from 'expo-router';
-import { cssInterop } from 'nativewind';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-cssInterop(SafeAreaView, {
-  className: {
-    target: 'style',
-    nativeStyleToProp: { height: true, width: true, size: true },
-  } as any,
-});
+import { useAppContext } from '@/context/appContext';
+import { Stack as S, usePathname, useRouter } from 'expo-router';
+import { useEffect } from 'react';
 
 const AuthLayout: React.FC = () => {
+  const { user } = useAppContext();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user !== undefined) {
+      router.back();
+    }
+  }, [pathname, user]);
+
   return (
     <Stack>
-      <S.Screen
-        name='login'
-        options={{
-          headerShown: false,
-          headerBackground: undefined,
-          animation: 'none',
-        }}
-      />
-      <S.Screen
-        name='register'
-        options={{
-          headerShown: false,
-          headerBackground: undefined,
-          animation: 'none',
-        }}
-      />
+      <S.Screen name='(auth-form)' options={{ headerShown: false }} />
       <S.Screen name='verify' options={{ title: 'Xác thực tài khoản' }} />
     </Stack>
   );

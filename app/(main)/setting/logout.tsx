@@ -13,11 +13,11 @@ const Logout = () => {
     setLoading(true);
     await removeUser();
     setLoading(false);
-    router.dismiss();
+    router.back();
   };
 
   const handleCancel = () => {
-    router.dismiss();
+    router.back();
   };
 
   return (
