@@ -12,8 +12,16 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { cssInterop, useColorScheme } from 'nativewind';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useAnkiContext } from '@/context/ankiContext';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 cssInterop(FontAwesome, {
+  className: {
+    target: 'style',
+    nativeStyleToProp: { size: true },
+  } as any,
+});
+cssInterop(MaterialIcons, {
   className: {
     target: 'style',
     nativeStyleToProp: { size: true },
@@ -34,6 +42,7 @@ const FloatAction = () => {
   const [isShow, setIsShow] = useState<boolean>(false);
   const { colorScheme } = useColorScheme();
   const router = useRouter();
+  const { curDeckId } = useAnkiContext();
 
   const handlePressIn = () => {
     Animated.parallel([
@@ -105,12 +114,28 @@ const FloatAction = () => {
             opacity: actionsOpacity,
           },
         ]}>
+        {curDeckId && (
+          <TouchableOpacity
+            className='flex-row items-center gap-4'
+            onPress={() => router.push('/(main)/(anki)/card')}>
+            <Text className='text-text'>Thêm thẻ mới</Text>
+            <View className='w-[40px] h-[40px] justify-center items-center bg-primary rounded-full'>
+              <FontAwesome
+                name='minus-square-o'
+                className='text-[24px] text-text-button'
+              />
+            </View>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           className='flex-row items-center gap-4'
           onPress={() => router.push('/(main)/(anki)/create-deck')}>
           <Text className='text-text'>Tạo bộ thẻ</Text>
           <View className='w-[40px] h-[40px] justify-center items-center bg-primary rounded-full'>
-            <FontAwesome name='plus' className='text-[24px] text-text-button' />
+            <MaterialIcons
+              name='my-library-add'
+              className='text-[24px] text-text-button'
+            />
           </View>
         </TouchableOpacity>
       </Animated.View>

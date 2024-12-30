@@ -20,14 +20,13 @@ const Table = () => {
     });
   };
 
-  const handleLongPressRow = (deckId: number, deckName: string) => {
+  const handleLongPressRow = (deckId: number) => {
     setCurDeckId(deckId);
 
     router.push({
       pathname: '/deck-modal',
       params: {
         deckId,
-        deckName,
       },
     });
   };
@@ -55,7 +54,7 @@ const Table = () => {
                   handleOnPressRow(id);
                 }}
                 onLongPress={() => {
-                  handleLongPressRow(id, name);
+                  handleLongPressRow(id);
                 }}
               />
             );

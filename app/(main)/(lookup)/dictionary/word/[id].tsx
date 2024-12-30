@@ -127,7 +127,7 @@ const Dictionary: React.FC = () => {
       <ScrollView
         className='bg-primary-background'
         style={{
-          paddingTop: insets.top,
+          paddingTop: insets.top + 10,
         }}>
         <View className='flex-col m-4 bg-secondary-background rounded-xl h-full'>
           <WordLoading />

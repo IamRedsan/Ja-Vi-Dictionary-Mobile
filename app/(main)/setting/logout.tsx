@@ -1,6 +1,8 @@
 import Button from '@/components/ui/Button';
+import { deleteTablesQuery } from '@/constants/Query';
 import { useAppContext } from '@/context/appContext';
 import { useRouter } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
 import { View, Text, TouchableWithoutFeedback } from 'react-native';
 
@@ -8,9 +10,11 @@ const Logout = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { removeUser } = useAppContext();
+  const db = useSQLiteContext();
 
   const handleLogout = async () => {
     setLoading(true);
+    await db.execAsync(deleteTablesQuery);
     await removeUser();
     setLoading(false);
     router.back();

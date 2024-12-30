@@ -1,9 +1,11 @@
 import { client } from '@/client/axiosClient';
 import FormRow from '@/components/form/FormRow';
 import Button from '@/components/ui/Button';
+import { createTablesQuery, deleteTablesQuery } from '@/constants/Query';
 import { useAppContext } from '@/context/appContext';
 import { AxiosError } from 'axios';
 import { Link, useRouter } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import React, { useState } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,6 +19,7 @@ const Login: React.FC = () => {
   const { setUser } = useAppContext();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const db = useSQLiteContext();
 
   const onChangeText = (key: keyof typeof values, value: string) => {
     setValues((values) => ({
@@ -35,6 +38,8 @@ const Login: React.FC = () => {
       });
 
       const { user, refreshToken, accessToken } = response.data.data;
+      await db.execAsync(deleteTablesQuery);
+      await db.execAsync(createTablesQuery);
       await setUser(user, accessToken, refreshToken);
     } catch (err) {
       const e = err as AxiosError;

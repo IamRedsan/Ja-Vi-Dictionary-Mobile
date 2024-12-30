@@ -4,7 +4,6 @@ import {
   createCard as createFsrsCard,
   getBeNotGone,
   mapCard,
-  mapDataHeatmap,
   mapDeck,
   mapPiechartData,
   mapReviewLog,
@@ -125,21 +124,22 @@ export type AnkiContextType = AnkiStateType & {
 
 export const AnkiContext = createContext<AnkiContextType | null>(null);
 
-const initialState: AnkiStateType = {
+const initialState: Omit<AnkiStateType, 'undoActions'> = {
   decks: [],
   windowingCards: [],
   reloadWindowingCards: false,
   browseCards: [],
   browseSearch: '',
   browseLoading: false,
-  undoActions: [],
 };
 
 const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { user } = useAppContext();
-  const [state, setState] = useState<AnkiStateType>(initialState);
+  const [state, setState] =
+    useState<Omit<AnkiStateType, 'undoActions'>>(initialState);
+  const [undoActions, setUndoActions] = useState<(() => Promise<void>)[][]>([]);
   const db = useSQLiteContext();
 
   const getDecks = async () => {
@@ -187,6 +187,7 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
 
         return { ...deck, ...todayCardCount };
       }),
+      reloadWindowingCards: true,
     }));
   };
 
@@ -566,19 +567,13 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const addUndo = (addUndoType: AddUndoType, fns: (() => Promise<void>)[]) => {
     if (addUndoType === AddUndoType.NEW) {
-      setState(({ undoActions, ...rest }) => ({
-        ...rest,
-        undoActions: [fns, ...undoActions],
-      }));
+      setUndoActions((undoActions) => [fns, ...undoActions]);
     } else if (addUndoType === AddUndoType.CONC) {
-      setState(({ undoActions, ...rest }) => {
+      setUndoActions((undoActions) => {
         const firstUndoAction = undoActions.at(0) ?? [];
         const leftUndoActions = undoActions.slice(1);
 
-        return {
-          ...rest,
-          undoActions: [[...firstUndoAction, ...fns], ...leftUndoActions],
-        };
+        return [[...firstUndoAction, ...fns], ...leftUndoActions];
       });
     }
   };
@@ -649,25 +644,18 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const undo = async () => {
-    const actions = state.undoActions.at(0);
+    const actions = undoActions.at(0);
     if (actions) {
       for (const action of actions) {
         await action();
       }
-      setState({
-        ...state,
-        undoActions: state.undoActions.slice(1),
-        reloadWindowingCards: true,
-      });
+      setUndoActions(undoActions.slice(1));
       await getDecks();
     }
   };
 
   const clearAllUndo = () => {
-    setState({
-      ...state,
-      undoActions: [],
-    });
+    setUndoActions([]);
   };
 
   const getHeatmapData = async (deckId: number) => {
@@ -756,6 +744,7 @@ const AnkiProvider: React.FC<{ children: React.ReactNode }> = ({
         clearAllUndo,
         getHeatmapData,
         getPiechartData,
+        undoActions,
       }}>
       {children}
     </AnkiContext.Provider>
