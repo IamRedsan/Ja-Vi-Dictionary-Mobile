@@ -1,11 +1,12 @@
 import { aiClient } from '@/client/axiosClient';
 import EarthLoading from '@/components/loading/EarthLoading';
-import Row from '@/components/translate/Row';
+import Button from '@/components/ui/Button';
+import { useTranslateContext } from '@/context/translateContext';
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { cssInterop } from 'nativewind';
 import { useEffect, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 cssInterop(Image, {
@@ -21,12 +22,20 @@ const blurhash =
 const FromImage = () => {
   const { imgUri, ratio } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>();
-  const [result, setResult] = useState<
-    { text: string; translated_text: string; number: number }[]
-  >([]);
+  const [text, setText] = useState('');
+  const {
+    setText: setTxt,
+    translate,
+    model,
+    toggleModel,
+  } = useTranslateContext();
+  const router = useRouter();
 
   useEffect(() => {
+    if (model === 'vija') {
+      toggleModel();
+    }
+
     const translateImage = async () => {
       setLoading(true);
 
@@ -39,7 +48,7 @@ const FromImage = () => {
 
       try {
         const response = await aiClient.post(
-          '/translate/from-image-v2',
+          '/translate/image-to-text',
           formData,
           {
             headers: {
@@ -47,9 +56,9 @@ const FromImage = () => {
             },
           }
         );
-        const { imageUrl, result } = response.data;
-        setImageUrl(imageUrl);
-        setResult(result);
+        const { text } = response.data;
+
+        setText(text);
       } catch (err) {
         Toast.show({
           type: 'error',
@@ -80,21 +89,24 @@ const FromImage = () => {
           style={{
             aspectRatio: ratio as string,
           }}
-          source={imageUrl}
+          source={imgUri}
           contentFit='cover'
           transition={1000}
           placeholder={{ blurhash }}
           allowDownscaling={false}
         />
-        <View className='bg-primary-background'>
-          {result.map(({ text, translated_text, number }, index) => (
-            <Row
-              key={index}
-              source={text}
-              target={translated_text}
-              number={number}
-            />
-          ))}
+        <View className='bg-primary-background p-4'>
+          <Text className='text-lg'>{text}</Text>
+        </View>
+        <View>
+          <Button
+            onPress={() => {
+              setTxt(text);
+              translate(text);
+              router.back();
+            }}>
+            Dịch
+          </Button>
         </View>
       </View>
     </ScrollView>

@@ -2,14 +2,15 @@ import { State } from 'ts-fsrs';
 import * as Crypto from 'expo-crypto';
 
 export const deleteTablesQuery = `
-  DROP TABLES IF EXISTS decks;
-  DROP TABLES IF EXISTS cards;
-  DROP TABLES IF EXISTS reviewLogs;
+  DROP TABLE IF EXISTS decks;
+  DROP TABLE IF EXISTS cards;
+  DROP TABLE IF EXISTS reviewLogs;
+  DROP TABLE IF EXISTS actionLogs;
 `;
 
 export const createTablesQuery = `
   CREATE TABLE IF NOT EXISTS decks (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     newCardQuantity INTEGER NOT NULL,
     createdDate TEXT NOT NULL,
@@ -17,7 +18,7 @@ export const createTablesQuery = `
   );
 
   CREATE TABLE IF NOT EXISTS cards (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     word TEXT NOT NULL,
     sentence TEXT NOT NULL,
     reading TEXT NOT NULL,
@@ -37,7 +38,7 @@ export const createTablesQuery = `
   );
 
   CREATE TABLE IF NOT EXISTS reviewLogs (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     difficulty REAL NOT NULL,
     due TEXT NOT NULL,
     elapsed_days INTEGER NOT NULL,
@@ -71,7 +72,7 @@ export const enum Action {
 
 export interface ActionLog {
   id: string;
-  action: number;
+  action: Action;
   targetTable: Table;
   targetId: number;
   createdDate: Date;
@@ -84,7 +85,9 @@ export const enum Table {
 }
 
 export const generateActionLogId = () => {
-  return Crypto.getRandomBytes(8).toString();
+  return Crypto.getRandomBytes(16).reduce((hexString, byte) => {
+    return hexString + byte.toString(16).padStart(2, '0');
+  }, '');
 };
 
 export const getDeckQuery = `
@@ -100,6 +103,11 @@ export const getDecksQuery = `
 export const createDeckQuery = `
   INSERT INTO decks (name, newCardQuantity, createdDate, updatedDate)
   VALUES (?, ?, ?, ?);
+`;
+
+export const pureCreateDeckQuery = `
+  INSERT INTO decks (id, name, newCardQuantity, createdDate, updatedDate)
+  VALUES (?, ?, ?, ?, ?);
 `;
 
 export const updateDeckQuery = `
@@ -146,6 +154,12 @@ export const getCardsQuery = `
       reading LIKE '%' || ? || '%' OR
       meaning LIKE '%' || ? || '%'
     );
+`;
+
+export const getCardsByDeckIdQuery = `
+  SELECT * 
+  FROM cards
+  WHERE deckId = ?;
 `;
 
 export const getCardQuery = `
@@ -293,9 +307,19 @@ export const pureCreateReviewLogQuery = `
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 `;
 
+export const getReviewLogQuery = `
+  SELECT * FROM reviewLogs
+  WHERE id = ?;
+`;
+
 export const getReviewLogsByCardIdQuery = `
   SELECT * FROM reviewLogs
   WHERE cardId = ?;
+`;
+
+export const getReviewLogsByDeckIdQuery = `
+  SELECT * FROM reviewLogs
+  WHERE deckId = ?;
 `;
 
 export const deleteReviewLogQuery = `
@@ -318,6 +342,11 @@ export const createActionLogQuery = `
   VALUES (?, ?, ?, ?, ?);
 `;
 
+export const getActionLogsQuery = `
+  SELECT * FROM actionLogs
+  ORDER BY createdDate ASC
+`;
+
 export const getLatestActionLogQuery = `
   SELECT * FROM actionLogs
   ORDER BY createdDate DESC
@@ -327,6 +356,15 @@ export const getLatestActionLogQuery = `
 export const deleteActionLogQuery = `
   DELETE FROM actionLogs
   WHERE id = ?;
+`;
+
+export const deleteActionLogsQuery = `
+  DELETE FROM actionLogs;
+`;
+
+export const deleteActionLogFromCreatedDateQuery = `
+  DELETE FROM actionLogs
+  WHERE createdDate > ?;
 `;
 
 export const getHeatmapDataQuery = `

@@ -3,9 +3,9 @@ import ImagePickerModal from '@/components/translate/ImagePickerModal';
 import Source from '@/components/translate/Source';
 import Target from '@/components/translate/Target';
 import Button from '@/components/ui/Button';
-import { socket } from '@/utils/socket';
+import { useTranslateContext } from '@/context/translateContext';
 import { cssInterop } from 'nativewind';
-import { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,113 +16,50 @@ cssInterop(SafeAreaView, {
 });
 
 const Translate = () => {
-  const [st, setSt] = useState<'javi' | 'vija'>('javi');
-  const stRef = useRef(st);
-  const [isConnected, setIsConnected] = useState(false);
-  const [source, setSource] = useState('');
-  const [target, setTarget] = useState('');
-  const [status, setStatus] = useState<'standby' | 'waiting' | 'translating'>(
-    'standby'
-  );
-
+  const {
+    isConnected,
+    model,
+    text,
+    translatedText,
+    status,
+    translate,
+    toggleModel,
+    setText,
+  } = useTranslateContext();
   const disabled = !isConnected || status !== 'standby';
   const loading = status !== 'standby';
-
-  useEffect(() => {
-    stRef.current = st;
-  }, [st]);
-
-  const handleTranslatePressed = () => {
-    if (source.trim().length === 0) return;
-
-    setStatus('waiting');
-    setTarget('');
-    socket.emit('translate-request', { model: st, content: source });
-  };
-
-  const handleSwitchModel = () => {
-    setSt((value) => {
-      return value === 'javi' ? 'vija' : 'javi';
-    });
-    const s = source;
-    setSource(target);
-    setTarget(s);
-  };
-
-  useEffect(() => {
-    const onConnect = () => {
-      setIsConnected(true);
-    };
-
-    const onDisconnect = () => {
-      setIsConnected(false);
-    };
-
-    const onTranslate = (text: string) => {
-      if (text === sourceTargetPair[stRef.current].startToken) {
-        setStatus('translating');
-      } else if (text === sourceTargetPair[stRef.current].endToken) {
-        setStatus('standby');
-      } else {
-        setTarget((preText) => {
-          text = text.replace(/#/g, '');
-          text = text.replace(/@/g, '');
-          if (stRef.current === 'javi') {
-            text = text.replace('_', ' ');
-            if (preText.length === 0)
-              text = text.charAt(0).toUpperCase() + text.slice(1);
-            else if (preText.charAt(preText.length - 1).match(/^[.!?]/))
-              text = ' ' + text.charAt(0).toUpperCase() + text.slice(1);
-            else if (!text.match(/^[.,:!?]/)) text = ' ' + text;
-          }
-          return preText + text;
-        });
-      }
-    };
-
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('translate', onTranslate);
-
-    socket.connect();
-
-    return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('translate', onTranslate);
-
-      socket.disconnect();
-    };
-  }, []);
+  const scrollViewRef = useRef<any>();
 
   return (
-    <View className='relative flex-1'>
+    <View className='relative flex-1 pb-[70px] bg-primary-background'>
       <SafeAreaView className='bg-primary-background' />
-      <ScrollView className='bg-primary-background flex-1'>
+      <ScrollView
+        className='bg-primary-background flex-1'
+        ref={scrollViewRef}
+        onContentSizeChange={() =>
+          scrollViewRef.current.scrollToEnd({ animated: true })
+        }>
         <Header
-          source={sourceTargetPair[st].source}
-          target={sourceTargetPair[st].target}
-          onPress={handleSwitchModel}
+          source={sourceTargetPair[model].source}
+          target={sourceTargetPair[model].target}
+          onPress={toggleModel}
           disabled={disabled}
         />
         <Source
-          title={sourceTargetPair[st].source}
-          text={source}
-          onChangeText={(text) => setSource(text)}
+          title={sourceTargetPair[model].source}
+          text={text}
+          onChangeText={(text) => setText(text)}
           disabled={disabled}
-          language={sourceTargetPair[st].sourceLanguageCode}
+          language={sourceTargetPair[model].sourceLanguageCode}
         />
-        <Button
-          className='mx-4'
-          disabled={disabled}
-          onPress={handleTranslatePressed}>
+        <Button className='mx-4' disabled={disabled} onPress={translate}>
           Dịch
         </Button>
         <Target
-          title={sourceTargetPair[st].target}
-          text={target}
+          title={sourceTargetPair[model].target}
+          text={translatedText}
           loading={loading}
-          language={sourceTargetPair[st].targetLanguageCode}
+          language={sourceTargetPair[model].targetLanguageCode}
         />
       </ScrollView>
       <ImagePickerModal />
@@ -138,15 +75,11 @@ const sourceTargetPair = {
     target: 'Tiếng Việt',
     sourceLanguageCode: 'ja-JP' as 'ja-JP' | 'vi-VN',
     targetLanguageCode: 'vi-VN' as 'ja-JP' | 'vi-VN',
-    startToken: '</s>',
-    endToken: '<unk>',
   },
   vija: {
     source: 'Tiếng Việt',
     target: 'Tiếng Nhật',
     sourceLanguageCode: 'vi-VN' as 'ja-JP' | 'vi-VN',
     targetLanguageCode: 'ja-JP' as 'ja-JP' | 'vi-VN',
-    startToken: '[CLS]',
-    endToken: '[SEP]',
   },
 };

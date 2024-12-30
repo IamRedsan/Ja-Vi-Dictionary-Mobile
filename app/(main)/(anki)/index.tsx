@@ -4,11 +4,13 @@ import { useAppContext } from '@/context/appContext';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { cssInterop } from 'nativewind';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAnkiSyncContext } from '@/context/ankiSyncContext';
+import { useIsFocused } from '@react-navigation/native';
 
 cssInterop(MaterialIcons, {
   className: {
@@ -33,7 +35,13 @@ cssInterop(Entypo, {
 
 const Decks = () => {
   const { user } = useAppContext();
-  const [isConflict, setIsConflict] = useState<boolean>(true);
+  const { isSync, loading, prepareSync } = useAnkiSyncContext();
+  const isFocused = useIsFocused();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) prepareSync();
+  }, [isFocused]);
 
   if (!user) {
     return (
@@ -74,11 +82,15 @@ const Decks = () => {
                 <Entypo name='bar-graph' className='text-2xl text-icon' />
               </TouchableOpacity>
             </Link>
-            <TouchableOpacity>
+            <TouchableOpacity
+              disabled={loading}
+              onPress={() => {
+                router.push('/(main)/(anki)/sync');
+              }}>
               <MaterialIcons name='sync' className='text-3xl text-icon' />
             </TouchableOpacity>
             <View className='absolute -right-1 -top-1 z-100'>
-              {isConflict && (
+              {!isSync && (
                 <MaterialIcons
                   name='error'
                   className='text-sm text-[#ff9966]'

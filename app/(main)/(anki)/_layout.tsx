@@ -5,7 +5,7 @@ const DeckLayout: React.FC = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name='index' />
-      <Stack.Screen name='graph' />
+      <Stack.Screen name='graph' options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name='card' options={{ animation: 'slide_from_right' }} />
       <Stack.Screen
         name='deck-modal'
@@ -30,6 +30,13 @@ const DeckLayout: React.FC = () => {
       />
       <Stack.Screen
         name='create-deck'
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+        }}
+      />
+      <Stack.Screen
+        name='sync'
         options={{
           presentation: 'transparentModal',
           animation: 'fade',

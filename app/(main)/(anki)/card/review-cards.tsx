@@ -29,7 +29,7 @@ cssInterop(FontAwesome5, {
     nativeStyleToProp: { height: true, width: true, size: true },
   } as any,
 });
-cssInterop(FontAwesome5, {
+cssInterop(AntDesign, {
   className: {
     target: 'style',
     nativeStyleToProp: { height: true, width: true, size: true },

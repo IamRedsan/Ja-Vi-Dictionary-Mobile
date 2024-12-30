@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Modal, TouchableWithoutFeedback } from 'react-native';
 import Button from '../ui/Button';
 import * as ImagePicker from 'expo-image-picker';
@@ -61,7 +61,7 @@ const ImagePickerModal = () => {
   };
 
   return (
-    <>
+    <React.Fragment>
       <Modal
         animationType='fade'
         visible={show}
@@ -98,11 +98,11 @@ const ImagePickerModal = () => {
         <Button
           onPress={() => setShow(true)}
           startIcon='image'
-          className='absolute bottom-4 right-4 p-[20px]'
+          className='absolute bottom-[-62px] right-4 p-[20px]'
           type='round'
         />
       </View>
-    </>
+    </React.Fragment>
   );
 };
 export default ImagePickerModal;

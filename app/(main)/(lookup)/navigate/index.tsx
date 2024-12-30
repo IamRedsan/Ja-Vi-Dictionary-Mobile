@@ -21,7 +21,7 @@ const Navigate: React.FC = () => {
       <View
         className='bg-primary-foreground px-6 pb-2'
         style={{
-          paddingTop: insets.top,
+          paddingTop: insets.top + 10,
         }}>
         <View className='flex-row justify-center items-center mx-4 gap-4'>
           <Link href='/search' asChild>

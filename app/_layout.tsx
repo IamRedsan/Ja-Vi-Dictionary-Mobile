@@ -10,6 +10,8 @@ import AnkiProvider from '@/context/ankiContext';
 import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
 import { View } from 'react-native';
 import { createTablesQuery, deleteTablesQuery } from '@/constants/Query';
+import TranslateProvider from '@/context/translateContext';
+import AnkiSyncProvider from '@/context/ankiSyncContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,21 +39,25 @@ const RootLayout: React.FC = () => {
             onInit={initDb}
             useSuspense>
             <AnkiProvider>
-              <EventProvider>
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                  }}>
-                  <Stack.Screen name='(main)' />
-                  <Stack.Screen
-                    name='(auth)'
-                    options={{
-                      animationTypeForReplace: 'push',
-                      animation: 'slide_from_bottom',
-                    }}
-                  />
-                </Stack>
-              </EventProvider>
+              <AnkiSyncProvider>
+                <TranslateProvider>
+                  <EventProvider>
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                      }}>
+                      <Stack.Screen name='(main)' />
+                      <Stack.Screen
+                        name='(auth)'
+                        options={{
+                          animationTypeForReplace: 'push',
+                          animation: 'slide_from_bottom',
+                        }}
+                      />
+                    </Stack>
+                  </EventProvider>
+                </TranslateProvider>
+              </AnkiSyncProvider>
             </AnkiProvider>
           </SQLiteProvider>
         </Suspense>

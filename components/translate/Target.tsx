@@ -35,16 +35,12 @@ const Target: React.FC<TargetProps> = ({ title, text, loading, language }) => {
   };
 
   return (
-    <View className='bg-primary m-4 p-4 rounded-lg'>
+    <View className='bg-primary mx-4 mt-4 p-4 rounded-lg'>
       <View className='flex-row justify-between items-center'>
         <Text className='text-white text-lg'>{title}</Text>
         {loading ? <ActivityIndicator color='white' /> : <View />}
       </View>
-      <TextArea
-        className='text-lg py-2 text-white min-h-[160px]'
-        value={text}
-        editable={false}
-      />
+      <Text className='text-lg py-2 text-white min-h-[160px]'>{text}</Text>
       <View className='flex-row justify-end gap-4'>
         <TouchableOpacity
           className='p-1'

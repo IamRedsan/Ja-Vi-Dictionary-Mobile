@@ -175,7 +175,7 @@ const Kanji: React.FC = () => {
     <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       enableOnAndroid={true}
-      className='bg-primary-background'
+      className='bg-secondary-background'
       style={{
         paddingTop: insets.top,
       }}>
